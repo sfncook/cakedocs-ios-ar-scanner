@@ -73,8 +73,8 @@ extension ViewController {
                 self.setNavigationBarTitle("")
                 instructionsVisible = false
                 showBackButton(false)
-                nextButton.isEnabled = false
-                loadModelButton.isHidden = true
+                nextButton.isEnabled = true
+                loadModelButton.isHidden = false
                 flashlightButton.isHidden = true
                 
                 // Make sure the SCNScene is cleared of any SCNNodes from previous scans.
@@ -138,7 +138,7 @@ extension ViewController {
                 self.setNavigationBarTitle("Ready to scan")
                 self.showBackButton(false)
                 self.nextButton.setTitle("Next", for: [])
-                self.loadModelButton.isHidden = true
+                self.loadModelButton.isHidden = false
                 self.flashlightButton.isHidden = true
                 if scan.ghostBoundingBoxExists {
                     self.displayInstruction(Message("Tap 'Next' to create an approximate bounding box around the object you want to scan."))
