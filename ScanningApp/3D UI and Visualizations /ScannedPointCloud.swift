@@ -132,12 +132,12 @@ class ScannedPointCloud: SCNNode, PointCloud {
         renderedPoints = referenceObjectPoints.filter { boundingBox.contains($0) }
 //        renderedPreliminaryPoints = currentFramePoints.filter { boundingBox.contains($0) }
         
-        let boxyPoints = filterPoints(points: renderedPoints)
-        print(boxyPoints.count)
+//        let boxyPoints = filterPoints(points: renderedPoints)
+//        print(boxyPoints.count)
         
-//        self.pointNode.geometry = createVisualization(for: renderedPoints, color: .appYellow, size: 12, type:.point)
+        self.pointNode.geometry = createVisualization(for: renderedPoints, color: .appYellow, size: 12, type:.point)
 //        self.preliminaryPointsNode.geometry = createVisualization(for: renderedPreliminaryPoints, color: .appLightYellow, size: 12, type:.line)
-        self.preliminaryPointsNode.geometry = createVisualization(for: boxyPoints, color: .appBlue, size: 12, type:.point)
+//        self.preliminaryPointsNode.geometry = createVisualization(for: boxyPoints, color: .appBlue, size: 12, type:.point)
     }
     
     var count: Int {
