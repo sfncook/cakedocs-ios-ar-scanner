@@ -89,6 +89,28 @@ class ScannedPointCloud: SCNNode, PointCloud {
         self.currentFramePoints = pointCloud.points
     }
     
+    func filterPoints(points: [SIMD3<Float>]) -> [SIMD3<Float>] {
+        var filteredPoints = [SIMD3<Float>]()
+        
+        for point in points {
+            var shouldAdd = true
+            
+            for existingPoint in filteredPoints {
+//                print(distance(existingPoint, point))
+                if distance(existingPoint, point) >= 0.5 {
+                    shouldAdd = false
+                    break
+                }
+            }
+            
+            if shouldAdd {
+                filteredPoints.append(point)
+            }
+        }
+        
+        return filteredPoints
+    }
+    
     func updateOnEveryFrame() {
         guard !self.isHidden else { return }
         guard !referenceObjectPoints.isEmpty, let boundingBox = boundingBox else {
@@ -98,7 +120,7 @@ class ScannedPointCloud: SCNNode, PointCloud {
         }
         
         renderedPoints = []
-        renderedPreliminaryPoints = []
+//        renderedPreliminaryPoints = []
         
         // Abort if the bounding box has no extent yet
         guard boundingBox.extent.x > 0 else { return }
@@ -108,10 +130,14 @@ class ScannedPointCloud: SCNNode, PointCloud {
         //       than rendering and updates of the bounding box, so some of the points
         //       may no longer be inside of the box.
         renderedPoints = referenceObjectPoints.filter { boundingBox.contains($0) }
-        renderedPreliminaryPoints = currentFramePoints.filter { boundingBox.contains($0) }
+//        renderedPreliminaryPoints = currentFramePoints.filter { boundingBox.contains($0) }
         
-        self.pointNode.geometry = createVisualization(for: renderedPoints, color: .appYellow, size: 12)
-        self.preliminaryPointsNode.geometry = createVisualization(for: renderedPreliminaryPoints, color: .appLightYellow, size: 12)
+        let boxyPoints = filterPoints(points: renderedPoints)
+        print(boxyPoints.count)
+        
+//        self.pointNode.geometry = createVisualization(for: renderedPoints, color: .appYellow, size: 12, type:.point)
+//        self.preliminaryPointsNode.geometry = createVisualization(for: renderedPreliminaryPoints, color: .appLightYellow, size: 12, type:.line)
+        self.preliminaryPointsNode.geometry = createVisualization(for: boxyPoints, color: .appBlue, size: 12, type:.point)
     }
     
     var count: Int {

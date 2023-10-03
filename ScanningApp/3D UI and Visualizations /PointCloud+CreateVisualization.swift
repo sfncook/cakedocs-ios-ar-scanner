@@ -9,12 +9,12 @@ import SceneKit
 
 // This is a protocol that should be implemented by all point cloud classes (ScannedPointCloud, DetectedPointCloud).
 protocol PointCloud {
-    func createVisualization(for points: [SIMD3<Float>], color: UIColor, size: CGFloat) -> SCNGeometry?
+    func createVisualization(for points: [SIMD3<Float>], color: UIColor, size: CGFloat, type: SCNGeometryPrimitiveType) -> SCNGeometry?
 }
 
 // All classes implementing the PointCloud protocol can benefit from this createVisualization implementation.
 extension PointCloud {
-    func createVisualization(for points: [SIMD3<Float>], color: UIColor, size: CGFloat) -> SCNGeometry? {
+    func createVisualization(for points: [SIMD3<Float>], color: UIColor, size: CGFloat, type: SCNGeometryPrimitiveType) -> SCNGeometry? {
         guard !points.isEmpty else { return nil }
         
         let stride = MemoryLayout<SIMD3<Float>>.size
@@ -31,7 +31,8 @@ extension PointCloud {
                                        dataStride: stride)
         
         // Create geometry element
-        let element = SCNGeometryElement(data: nil, primitiveType: .point, primitiveCount: points.count, bytesPerIndex: 0)
+//        let element = SCNGeometryElement(data: nil, primitiveType: .point, primitiveCount: points.count, bytesPerIndex: 0)
+        let element = SCNGeometryElement(data: nil, primitiveType: type, primitiveCount: points.count, bytesPerIndex: 0)
         element.pointSize = 0.001
         element.minimumPointScreenSpaceRadius = size
         element.maximumPointScreenSpaceRadius = size

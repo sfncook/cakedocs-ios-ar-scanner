@@ -23,7 +23,7 @@ class DetectedPointCloud: SCNNode, PointCloud {
         // Semitransparently visualize the reference object's points.
         let referenceObjectPoints = SCNNode()
         referenceObjectPoints.geometry = createVisualization(for: referenceObjectPointCloud.points,
-                                                             color: .appYellow, size: 12)
+                                                             color: .appYellow, size: 12, type: .point)
         addChildNode(referenceObjectPoints)
     }
     
@@ -48,6 +48,6 @@ class DetectedPointCloud: SCNNode, PointCloud {
         }
         
         let currentPointCloudInliers = inlierPoints
-        self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12)
+        self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12, type: .point)
     }
 }

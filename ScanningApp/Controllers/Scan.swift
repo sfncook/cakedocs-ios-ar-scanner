@@ -406,21 +406,22 @@ class Scan {
     }
     
     var isReasonablySized: Bool {
-        guard let boundingBox = scannedObject.boundingBox else {
-            return false
-        }
-        
-        // The bounding box should not be too small and not too large.
-        // Note: 3D object detection is optimized for tabletop scenarios.
-        let validSizeRange: ClosedRange<Float> = 0.01...5.0
-        if validSizeRange.contains(boundingBox.extent.x) && validSizeRange.contains(boundingBox.extent.y) &&
-            validSizeRange.contains(boundingBox.extent.z) {
-            // Check that the volume of the bounding box is at least 500 cubic centimeters.
-            let volume = boundingBox.extent.x * boundingBox.extent.y * boundingBox.extent.z
-            return volume >= 0.0005
-        }
-        
-        return false
+//        guard let boundingBox = scannedObject.boundingBox else {
+//            return false
+//        }
+//        
+//        // The bounding box should not be too small and not too large.
+//        // Note: 3D object detection is optimized for tabletop scenarios.
+//        let validSizeRange: ClosedRange<Float> = 0.01...5.0
+//        if validSizeRange.contains(boundingBox.extent.x) && validSizeRange.contains(boundingBox.extent.y) &&
+//            validSizeRange.contains(boundingBox.extent.z) {
+//            // Check that the volume of the bounding box is at least 500 cubic centimeters.
+//            let volume = boundingBox.extent.x * boundingBox.extent.y * boundingBox.extent.z
+//            return volume >= 0.0005
+//        }
+//        
+//        return false
+        return true
     }
     
     /// - Tag: ExtractReferenceObject
