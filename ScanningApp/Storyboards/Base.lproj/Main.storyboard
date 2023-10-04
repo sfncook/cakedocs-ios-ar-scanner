@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14302" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
-    <device id="ipad9_7" orientation="landscape">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+    <device id="retina6_72" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14276"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,26 +14,26 @@
             <objects>
                 <viewController id="BV1-FR-VrT" customClass="ViewController" customModule="ScanningApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hbm-Ig-0N9" customClass="ARSCNView">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nsN-wC-uuj">
-                                <rect key="frame" x="0.0" y="0.0" width="1024" height="70"/>
+                                <rect key="frame" x="0.0" y="0.0" width="430" height="103"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="l2m-QL-EJO">
-                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="70"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="430" height="103"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <blurEffect style="light"/>
                             </visualEffectView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ky8-eY-0LO" userLabel="Blur View">
-                                <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                                <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Hey-0G-jup">
-                                    <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <blurEffect style="light"/>
                             </visualEffectView>
-                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p0C-F0-p11" userLabel="Next Button Touch Area">
+                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p0C-F0-p11" userLabel="Next Button Touch Area">
                                 <rect key="frame" x="291" y="695" width="84" height="83"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -44,8 +44,8 @@
                                     <action selector="nextButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="Bvs-GU-PQ0"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Emj-yh-Wao" userLabel="Next Button" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
-                                <rect key="frame" x="462" y="683" width="100" height="45"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Emj-yh-Wao" userLabel="Next Button" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
+                                <rect key="frame" x="165" y="813" width="100" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="RBH-Ep-ka0"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="hZz-BW-08X"/>
@@ -55,7 +55,7 @@
                                     <action selector="nextButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="37x-d3-hp6"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MRb-bZ-YPJ" userLabel="? Button Touch Area">
+                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MRb-bZ-YPJ" userLabel="? Button Touch Area">
                                 <rect key="frame" x="291" y="695" width="84" height="83"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -66,8 +66,8 @@
                                     <action selector="toggleInstructionsButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="mbh-tB-lk5"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bG7-IC-Bnx" userLabel="? Button" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
-                                <rect key="frame" x="959" y="683" width="45" height="45"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bG7-IC-Bnx" userLabel="? Button" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
+                                <rect key="frame" x="365" y="813" width="45" height="45"/>
                                 <accessibility key="accessibilityConfiguration" label="Toggle instruction label"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="45" id="934-S4-2JQ"/>
@@ -80,11 +80,11 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="toggleInstructionsButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="FKw-vC-XiO"/>
+                                    <action selector="scanButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="Iek-Uo-jzB"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nvw-kB-ETJ" userLabel="Left Button Touch Area">
-                                <rect key="frame" x="0.0" y="678" width="130" height="130"/>
+                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nvw-kB-ETJ" userLabel="Left Button Touch Area">
+                                <rect key="frame" x="0.0" y="808" width="130" height="130"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="130" id="9dq-lj-jho"/>
@@ -95,20 +95,22 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OaE-RQ-EVR" userLabel="Load Model" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
-                                <rect key="frame" x="20" y="683" width="110" height="45"/>
+                                <rect key="frame" x="20" y="813" width="110" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="chg-uX-ilB"/>
                                     <constraint firstAttribute="height" constant="45" id="eq9-uY-S0E"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <state key="normal" title="Load Model"/>
+                                <state key="normal" title="Load Model">
+                                    <color key="titleColor" name="appBlue"/>
+                                </state>
                                 <state key="selected" image="addPressed"/>
                                 <connections>
                                     <action selector="loadModelButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="6ai-f3-gVp"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZkM-BT-CgT" userLabel="Flashlight toggle" customClass="FlashlightButton" customModule="ScanningApp" customModuleProvider="target">
-                                <rect key="frame" x="20" y="683" width="110" height="45"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZkM-BT-CgT" userLabel="Flashlight toggle" customClass="FlashlightButton" customModule="ScanningApp" customModuleProvider="target">
+                                <rect key="frame" x="20" y="813" width="110" height="45"/>
                                 <constraints>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="Gdr-yU-PTF"/>
                                     <constraint firstAttribute="height" constant="45" id="QUe-Fa-GG8"/>
@@ -121,13 +123,13 @@
                                 </connections>
                             </button>
                             <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EiA-XD-X8R" userLabel="Session Info View">
-                                <rect key="frame" x="416.5" y="94" width="191" height="38"/>
+                                <rect key="frame" x="120" y="127" width="190" height="38"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="g0f-IE-Nfz">
-                                    <rect key="frame" x="0.0" y="0.0" width="191" height="38"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="190" height="38"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Initializing AR session." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UrR-38-pup">
-                                            <rect key="frame" x="8" y="8" width="169" height="22"/>
+                                            <rect key="frame" x="8" y="8" width="168" height="22"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="Wv5-fS-H6v"/>
                                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="ZcZ-zt-BvT"/>
@@ -151,24 +153,24 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </visualEffectView>
-                            <visualEffectView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ug5-TJ-D8K" userLabel="Instruction View">
-                                <rect key="frame" x="66" y="593" width="240" height="50"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" id="XVZ-p0-Vpo">
-                                    <rect key="frame" x="0.0" y="0.0" width="240" height="50"/>
+                            <visualEffectView opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ug5-TJ-D8K" userLabel="Instruction View">
+                                <rect key="frame" x="207" y="738" width="16" height="25"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="XVZ-p0-Vpo">
+                                    <rect key="frame" x="0.0" y="0.0" width="16" height="25"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <visualEffectView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9cs-oy-WhM">
-                                            <rect key="frame" x="0.0" y="0.0" width="240" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="16" height="25"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="VaX-Jx-f4u">
-                                                <rect key="frame" x="0.0" y="0.0" width="240" height="50"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="16" height="25"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.75" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xZB-0J-nhW" customClass="MessageLabel" customModule="ScanningApp" customModuleProvider="target">
-                                                        <rect key="frame" x="8" y="8" width="0.0" height="0.0"/>
+                                                        <rect key="frame" x="8" y="8" width="0.0" height="9"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                        <color key="textColor" systemColor="darkTextColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                 </subviews>
@@ -194,13 +196,29 @@
                                 </userDefinedRuntimeAttributes>
                             </visualEffectView>
                             <navigationBar opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zK5-Be-vZh">
-                                <rect key="frame" x="0.0" y="20" width="1024" height="50"/>
+                                <rect key="frame" x="0.0" y="59" width="430" height="44"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <items>
                                     <navigationItem title="Title" id="kKY-AD-y1E"/>
                                 </items>
                             </navigationBar>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lyk-5f-3Zg" userLabel="Scan Model" customClass="RoundedButton" customModule="ScanningApp" customModuleProvider="target">
+                                <rect key="frame" x="300" y="813" width="110" height="45"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="110" id="CUv-6H-MVH"/>
+                                    <constraint firstAttribute="height" constant="45" id="WKU-cv-vKa"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="Scan">
+                                    <color key="titleColor" name="appBlue"/>
+                                </state>
+                                <state key="selected" image="addPressed"/>
+                                <connections>
+                                    <action selector="scanButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="4ms-I7-DVM"/>
+                                </connections>
+                            </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="t88-em-YKH"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
@@ -232,6 +250,8 @@
                             <constraint firstItem="nsN-wC-uuj" firstAttribute="bottom" secondItem="zK5-Be-vZh" secondAttribute="bottom" id="Zna-cx-mVq"/>
                             <constraint firstItem="OaE-RQ-EVR" firstAttribute="centerY" secondItem="Emj-yh-Wao" secondAttribute="centerY" id="cCm-hD-zWE"/>
                             <constraint firstItem="t88-em-YKH" firstAttribute="bottom" secondItem="p0C-F0-p11" secondAttribute="bottom" constant="-40" id="cR0-rT-ueR"/>
+                            <constraint firstItem="Lyk-5f-3Zg" firstAttribute="centerY" secondItem="Emj-yh-Wao" secondAttribute="centerY" id="ee8-yY-Ma9"/>
+                            <constraint firstItem="t88-em-YKH" firstAttribute="trailing" secondItem="Lyk-5f-3Zg" secondAttribute="trailing" constant="20" id="hWu-qf-AsT"/>
                             <constraint firstItem="Emj-yh-Wao" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ZkM-BT-CgT" secondAttribute="trailing" constant="8" symbolic="YES" id="pLX-md-ebQ"/>
                             <constraint firstItem="OaE-RQ-EVR" firstAttribute="leading" secondItem="t88-em-YKH" secondAttribute="leading" constant="20" id="q27-oD-8Zk"/>
                             <constraint firstItem="ZkM-BT-CgT" firstAttribute="leading" secondItem="t88-em-YKH" secondAttribute="leading" constant="20" id="vcZ-h5-BRh"/>
@@ -242,7 +262,6 @@
                             </constraint>
                             <constraint firstItem="ky8-eY-0LO" firstAttribute="leading" secondItem="hbm-Ig-0N9" secondAttribute="leading" id="zlH-3F-1ed"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="t88-em-YKH"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="lb4-4q-tkf" appends="YES" id="RiO-2Q-jew"/>
                             <outletCollection property="gestureRecognizers" destination="QGZ-By-4eN" appends="YES" id="Dbt-bs-eJ8"/>
@@ -260,6 +279,7 @@
                         <outlet property="loadModelButton" destination="OaE-RQ-EVR" id="YUd-h0-BzI"/>
                         <outlet property="navigationBar" destination="zK5-Be-vZh" id="9Wv-CR-fWA"/>
                         <outlet property="nextButton" destination="Emj-yh-Wao" id="GZb-RV-uMb"/>
+                        <outlet property="scanModelButton" destination="Lyk-5f-3Zg" id="2zE-Pj-9MS"/>
                         <outlet property="sceneView" destination="hbm-Ig-0N9" id="3MK-hv-QPJ"/>
                         <outlet property="sessionInfoLabel" destination="UrR-38-pup" id="EUV-Ee-dHk"/>
                         <outlet property="sessionInfoView" destination="EiA-XD-X8R" id="Ipb-ZM-laj"/>
@@ -307,7 +327,30 @@
             <point key="canvasLocation" x="140" y="133.00492610837438"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="Emj-yh-Wao">
+            <size key="intrinsicContentSize" width="32" height="30"/>
+        </designable>
+        <designable name="Lyk-5f-3Zg">
+            <size key="intrinsicContentSize" width="35" height="30"/>
+        </designable>
+        <designable name="OaE-RQ-EVR">
+            <size key="intrinsicContentSize" width="80" height="30"/>
+        </designable>
+        <designable name="ZkM-BT-CgT">
+            <size key="intrinsicContentSize" width="61" height="30"/>
+        </designable>
+        <designable name="bG7-IC-Bnx">
+            <size key="intrinsicContentSize" width="30" height="30"/>
+        </designable>
+    </designables>
     <resources>
         <image name="addPressed" width="48" height="48"/>
+        <namedColor name="appBlue">
+            <color red="0.0" green="0.47843137383460999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

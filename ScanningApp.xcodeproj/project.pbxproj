@@ -42,6 +42,7 @@
 		C4A938C5208799D3008D5D13 /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A938C4208799D3008D5D13 /* Tile.swift */; };
 		C4B16A0820AF2DEE00BE6B5B /* FlashlightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B16A0720AF2DEE00BE6B5B /* FlashlightButton.swift */; };
 		C4CE2699203AF7A1007B12A5 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CE2690203AF7A1007B12A5 /* RoundedButton.swift */; };
+		D408B81E2ACCD0D40087D112 /* flower.png in Resources */ = {isa = PBXBuildFile; fileRef = D408B81D2ACCD0D40087D112 /* flower.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		C4A938C4208799D3008D5D13 /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
 		C4B16A0720AF2DEE00BE6B5B /* FlashlightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlashlightButton.swift; sourceTree = "<group>"; };
 		C4CE2690203AF7A1007B12A5 /* RoundedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		D408B81D2ACCD0D40087D112 /* flower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flower.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +152,7 @@
 				11D4F6C320A19AF200892189 /* Utility Extensions */,
 				C479BF32201F84FB0030C57A /* Storyboards */,
 				395C9950200707A40025413C /* Assets.xcassets */,
+				D408B81D2ACCD0D40087D112 /* flower.png */,
 				C4543843207F38460016097A /* art.scnassets */,
 				395C9955200707A40025413C /* Info.plist */,
 				395C9945200707A30025413C /* Products */,
@@ -288,6 +291,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D408B81E2ACCD0D40087D112 /* flower.png in Resources */,
 				1119C68320AA135800DDFCC2 /* README.md in Resources */,
 				C4543844207F38460016097A /* art.scnassets in Resources */,
 			);

@@ -24,6 +24,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     @IBOutlet weak var instructionView: UIVisualEffectView!
     @IBOutlet weak var instructionLabel: MessageLabel!
     @IBOutlet weak var loadModelButton: RoundedButton!
+    @IBOutlet weak var scanModelButton: RoundedButton!
     @IBOutlet weak var flashlightButton: FlashlightButton!
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var sessionInfoView: UIVisualEffectView!
@@ -160,6 +161,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     
     @IBAction func nextButtonTapped(_ sender: Any) {
         guard !nextButton.isHidden && nextButton.isEnabled else { return }
+        switchToNextState()
+    }
+    
+    @IBAction func scanButtonTapped(_ sender: Any) {
+        guard !scanModelButton.isHidden else { return }
         switchToNextState()
     }
     
