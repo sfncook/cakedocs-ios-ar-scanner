@@ -210,15 +210,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     @IBAction func loadModelButtonTapped(_ sender: Any) {
         guard !loadModelButton.isHidden && loadModelButton.isEnabled else { return }
         
-        let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.apple.arobject"], in: .import)
-        documentPicker.delegate = self
-        
-        documentPicker.modalPresentationStyle = .overCurrentContext
-        documentPicker.popoverPresentationController?.sourceView = self.loadModelButton
-        documentPicker.popoverPresentationController?.sourceRect = self.loadModelButton.bounds
-        
-        DispatchQueue.main.async {
-            self.present(documentPicker, animated: true, completion: nil)
+        if(state == .testing) {
+            createAndShareReferenceObject()
+        } else {
+            let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.apple.arobject"], in: .import)
+            documentPicker.delegate = self
+            
+            documentPicker.modalPresentationStyle = .overCurrentContext
+            documentPicker.popoverPresentationController?.sourceView = self.loadModelButton
+            documentPicker.popoverPresentationController?.sourceRect = self.loadModelButton.bounds
+            
+            DispatchQueue.main.async {
+                self.present(documentPicker, animated: true, completion: nil)
+            }
         }
     }
     
@@ -342,8 +346,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             }
             
             // Initiate a share sheet for the scanned object
-            let airdropShareSheet = ShareScanViewController(sourceView: self.nextButton, sharedObject: documentURL)
             DispatchQueue.main.async {
+                let airdropShareSheet = ShareScanViewController(sourceView: self.nextButton, sharedObject: documentURL)
                 self.present(airdropShareSheet, animated: true, completion: nil)
             }
         }
@@ -526,22 +530,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     func loadReferenceObjectToMerge(from url: URL) {
         do {
             let receivedReferenceObject = try ARReferenceObject(archiveURL: url)
+            self.referenceObjectToTest = receivedReferenceObject
+            self.state = .testing
             
-            // Ask the user if the received object should be merged into the current scan,
-            // or if the received scan should be tested (and the current one discarded).
-            let title = "Scan \"\(url.lastPathComponent)\" received"
-            let message = """
-                Do you want to merge the received scan into the current scan,
-                or test only the received scan, discarding the current scan?
-                """
-            let merge = UIAlertAction(title: "Merge Into This Scan", style: .default) { _ in
-                self.mergeIntoCurrentScan(referenceObject: receivedReferenceObject, from: url)
-            }
-            let test = UIAlertAction(title: "Test Received Scan", style: .default) { _ in
-                self.referenceObjectToTest = receivedReferenceObject
-                self.state = .testing
-            }
-            self.showAlert(title: title, message: message, actions: [merge, test])
+            
+//            // Ask the user if the received object should be merged into the current scan,
+//            // or if the received scan should be tested (and the current one discarded).
+//            let title = "\"\(url.lastPathComponent)\" loaded"
+//            let message = """
+//                Do you want to merge and improve the current object?
+//                """
+//            let merge = UIAlertAction(title: "Improve current object", style: .default) { _ in
+//                self.mergeIntoCurrentScan(referenceObject: receivedReferenceObject, from: url)
+//            }
+//            let test = UIAlertAction(title: "Load this from scratch", style: .default) { _ in
+//                self.referenceObjectToTest = receivedReferenceObject
+//                self.state = .testing
+//            }
+//            self.showAlert(title: title, message: message, actions: [merge, test])
             
         } catch {
             self.showAlert(title: "File invalid", message: "Loading the scanned object file failed.",

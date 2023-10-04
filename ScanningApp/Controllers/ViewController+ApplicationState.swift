@@ -76,6 +76,7 @@ extension ViewController {
                 nextButton.isEnabled = true
                 scanModelButton.isHidden = false
                 loadModelButton.isHidden = false
+                loadModelButton.setTitle("Load", for: [])
 //                flashlightButton.isHidden = true
                 
                 // Make sure the SCNScene is cleared of any SCNNodes from previous scans.
@@ -113,9 +114,10 @@ extension ViewController {
                 print("State: Testing")
                 self.setNavigationBarTitle("")
                 scanModelButton.isHidden = true
-                loadModelButton.isHidden = true
+                loadModelButton.isHidden = false
+                loadModelButton.setTitle("Save", for: [])
 //                flashlightButton.isHidden = false
-                showMergeScanButton()
+//                showMergeScanButton()
 //                nextButton.isEnabled = true
 //                nextButton.setTitle("Share", for: [])
                 instructionsVisible = false
@@ -146,6 +148,7 @@ extension ViewController {
                 self.scanModelButton.isHidden = true
                 self.scanModelButton.setTitle("Start", for: [])
                 self.loadModelButton.isHidden = false
+                self.loadModelButton.setTitle("Load", for: [])
                 self.displayInstruction(Message("Initializing, please wait"))
 //                self.flashlightButton.isHidden = true
             case .defineBoundingBox:
