@@ -98,10 +98,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                                        name: ScannedObject.boundingBoxCreatedNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(scanPercentageChanged),
                                        name: BoundingBox.scanPercentageChangedNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(boundingBoxPositionOrExtentChanged(_:)),
-                                       name: BoundingBox.extentChangedNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(boundingBoxPositionOrExtentChanged(_:)),
-                                       name: BoundingBox.positionChangedNotification, object: nil)
+//        notificationCenter.addObserver(self, selector: #selector(boundingBoxPositionOrExtentChanged(_:)),
+//                                       name: BoundingBox.extentChangedNotification, object: nil)
+//        notificationCenter.addObserver(self, selector: #selector(boundingBoxPositionOrExtentChanged(_:)),
+//                                       name: BoundingBox.positionChangedNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(objectOriginPositionChanged(_:)),
                                        name: ObjectOrigin.positionChangedNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(displayWarningIfInLowPowerMode),

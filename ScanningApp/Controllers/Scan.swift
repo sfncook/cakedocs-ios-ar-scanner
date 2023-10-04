@@ -57,27 +57,29 @@ class Scan {
                 // This screenshot will later be saved in the *.arobject file
                 createScreenshot()
             case .adjustingOrigin where stateValue == .scanning && qualityIsLow:
-                let title = "Not enough detail"
-                let message = """
-                This scan has not enough detail (it contains \(pointCloud.count) features - aim for at least \(Scan.minFeatureCount)).
-                It is unlikely that a good reference object can be generated.
-                Do you want to go back and continue the scan?
-                """
-                ViewController.instance?.showAlert(title: title, message: message, buttonTitle: "Yes", showCancel: true) { _ in
-                    self.state = .scanning
-                }
+                self.state = .scanning
+//                let title = "Not enough detail"
+//                let message = """
+//                This scan has not enough detail (it contains \(pointCloud.count) features - aim for at least \(Scan.minFeatureCount)).
+//                It is unlikely that a good reference object can be generated.
+//                Do you want to go back and continue the scan?
+//                """
+//                ViewController.instance?.showAlert(title: title, message: message, buttonTitle: "Yes", showCancel: true) { _ in
+//                    self.state = .scanning
+//                }
             case .adjustingOrigin where stateValue == .scanning:
-                if let boundingBox = scannedObject.boundingBox, boundingBox.progressPercentage < 100 {
-                    let title = "Scan not complete"
-                    let message = """
-                    The object was not scanned from all sides, scanning progress is \(boundingBox.progressPercentage)%.
-                    It is likely that it won't detect from all angles.
-                    Do you want to go back and continue the scan?
-                    """
-                    ViewController.instance?.showAlert(title: title, message: message, buttonTitle: "Yes", showCancel: true) { _ in
-                        self.state = .scanning
-                    }
-                }
+                self.state = .scanning
+//                if let boundingBox = scannedObject.boundingBox, boundingBox.progressPercentage < 100 {
+//                    let title = "Scan not complete"
+//                    let message = """
+//                    The object was not scanned from all sides, scanning progress is \(boundingBox.progressPercentage)%.
+//                    It is likely that it won't detect from all angles.
+//                    Do you want to go back and continue the scan?
+//                    """
+//                    ViewController.instance?.showAlert(title: title, message: message, buttonTitle: "Yes", showCancel: true) { _ in
+//                        self.state = .scanning
+//                    }
+//                }
             default:
                 break
             }
@@ -346,9 +348,9 @@ class Scan {
             
             if let lightEstimate = frame.lightEstimate, lightEstimate.ambientIntensity < 500, !hasWarnedAboutLowLight, isFirstScan {
                 hasWarnedAboutLowLight = true
-                let title = "Too dark for scanning"
-                let message = "Consider moving to an environment with more light."
-                ViewController.instance?.showAlert(title: title, message: message)
+//                let title = "Too dark for scanning"
+//                let message = "Consider moving to an environment with more light."
+//                ViewController.instance?.showAlert(title: title, message: message)
             }
             
             // Try a preliminary creation of the reference object based off the current

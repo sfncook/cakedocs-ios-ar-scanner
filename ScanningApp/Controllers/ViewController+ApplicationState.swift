@@ -97,7 +97,7 @@ extension ViewController {
                 showBackButton(false)
                 nextButton.isEnabled = false
                 nextButton.setTitle("Next", for: [])
-                displayInstruction(Message("Please wait for stable tracking"))
+//                displayInstruction(Message("Please wait for stable tracking"))
                 cancelMaxScanTimeTimer()
             case .scanning:
                 print("State: Scanning")
@@ -138,28 +138,22 @@ extension ViewController {
             switch scanState {
             case .ready:
                 print("State: Ready to scan")
-                self.setNavigationBarTitle("Ready to scan")
+//                self.setNavigationBarTitle("Find")
                 self.showBackButton(false)
                 self.nextButton.setTitle("Next", for: [])
-                self.scanModelButton.isHidden = false
+                self.scanModelButton.isHidden = true
+                self.scanModelButton.setTitle("Start", for: [])
                 self.loadModelButton.isHidden = false
+                self.displayInstruction(Message("Initializing, please wait"))
 //                self.flashlightButton.isHidden = true
-                if scan.ghostBoundingBoxExists {
-                    self.displayInstruction(Message("Tap 'Next' to create an approximate bounding box around the object you want to scan."))
-                    self.nextButton.isEnabled = true
-                } else {
-                    self.displayInstruction(Message("Point at a nearby object to scan."))
-                    self.nextButton.isEnabled = false
-                }
             case .defineBoundingBox:
                 print("State: Define bounding box")
-                self.displayInstruction(Message("Position and resize bounding box using gestures.\n" +
-                    "Long press sides to push/pull them in or out. "))
+                self.displayInstruction(Message("Adjust the yellow bounding box"))
                 self.setNavigationBarTitle("Define bounding box")
                 self.showBackButton(true)
                 self.nextButton.isEnabled = scan.boundingBoxExists
                 self.scanModelButton.isHidden = false
-                self.scanModelButton.setTitle("Start scanning", for: [])
+                self.scanModelButton.setTitle("Scan", for: [])
                 self.loadModelButton.isHidden = true
 //                self.flashlightButton.isHidden = true
                 self.nextButton.setTitle("Scan", for: [])
@@ -249,8 +243,10 @@ extension ViewController {
     func ghostBoundingBoxWasCreated(_ notification: Notification) {
         if let scan = scan, scan.state == .ready {
             DispatchQueue.main.async {
-                self.nextButton.isEnabled = true
-                self.displayInstruction(Message("Tap 'Next' to create an approximate bounding box around the object you want to scan."))
+                self.displayInstruction(Message("Look at target object, click 'Start'"))
+                self.scanModelButton.isHidden = false
+//                self.nextButton.isEnabled = true
+//                self.displayInstruction(Message("Tap 'Next' to create an approximate bounding box around the object you want to scan."))
             }
         }
     }
@@ -259,8 +255,10 @@ extension ViewController {
     func ghostBoundingBoxWasRemoved(_ notification: Notification) {
         if let scan = scan, scan.state == .ready {
             DispatchQueue.main.async {
-                self.nextButton.isEnabled = false
-                self.displayInstruction(Message("Point at a nearby object to scan."))
+                self.displayInstruction(Message("Readjusting, one moment please"))
+                self.scanModelButton.isHidden = true
+//                self.nextButton.isEnabled = false
+//                self.displayInstruction(Message("Point at a nearby object to scan."))
             }
         }
     }
