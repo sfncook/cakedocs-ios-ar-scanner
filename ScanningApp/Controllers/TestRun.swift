@@ -32,6 +32,8 @@ class TestRun {
     
     private(set) var previewImage = UIImage()
     
+    private var sphereNode = SCNNode(geometry: SCNSphere(radius: 0.005))
+    
     init(sceneView: ARSCNView) {
         self.sceneView = sceneView
     }
@@ -66,6 +68,8 @@ class TestRun {
         self.detectedObject = DetectedObject(referenceObject: object)
         self.sceneView.scene.rootNode.addChildNode(self.detectedObject!)
         
+        self.detectedObject?.addChildNode(self.sphereNode)
+        
         self.lastDetectionStartTime = Date()
         
         let configuration = ARWorldTrackingConfiguration()
@@ -76,8 +80,6 @@ class TestRun {
     }
     
     func didTapWhileTesting(_ gesture: UITapGestureRecognizer) {
-        print("didTapWhileTesting")
-        
         let hitLocationInView = gesture.location(in: sceneView)
         
         // Get the ray in 3D space corresponding to the user's tap
@@ -104,7 +106,7 @@ class TestRun {
 
         // Place a sphere node at the closest point
         if let closestPoint = closestPoint {
-            let sphereNode = SCNNode(geometry: SCNSphere(radius: 0.005))  // Example radius
+            let sphereNode = SCNNode(geometry: SCNSphere(radius: 0.005))
             sphereNode.position = SCNVector3(closestPoint)
             self.detectedObject?.addChildNode(sphereNode)
         }
@@ -148,10 +150,56 @@ class TestRun {
         startNoDetectionTimer()
     }
     
+    func rayFromCenterOfScreen(in sceneView: ARSCNView) -> (origin: SCNVector3, direction: SCNVector3)? {
+        let screenCenter = CGPoint(x: sceneView.bounds.midX, y: sceneView.bounds.midY)
+
+        // Convert 2D screen position (near plane) to 3D world space position
+        let nearVector = sceneView.unprojectPoint(SCNVector3(screenCenter.x, screenCenter.y, 0))
+
+        // Convert 2D screen position (far plane) to 3D world space position
+        let farVector = sceneView.unprojectPoint(SCNVector3(screenCenter.x, screenCenter.y, 1))
+        
+        // Calculate the direction from the near point to the far point
+        let direction = normalize(farVector - nearVector)
+        
+        return (origin: nearVector, direction: direction)
+    }
+
+    func normalize(_ vector: SCNVector3) -> SCNVector3 {
+        let length = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
+        return SCNVector3(vector.x / length, vector.y / length, vector.z / length)
+    }
+
+    
     func updateOnEveryFrame() {
         if let detectedObject = self.detectedObject {
             if let currentPointCloud = self.sceneView.session.currentFrame?.rawFeaturePoints {
                 detectedObject.updatePointCloud(currentPointCloud)
+            }
+        }
+        
+        if let referenceObject = self.referenceObject {
+            if let ray = rayFromCenterOfScreen(in: self.sceneView) {
+                let points = referenceObject.rawFeaturePoints.points
+                
+                // Find the point from the point cloud that is closest to the ray
+                var closestPoint: SIMD3<Float>? = nil
+                var smallestDistance = Float.infinity
+
+                for i in 0..<points.count {
+                    let point = points[i]
+                    let ptVector = point.scnVector3
+                    let distance = distanceFromRay(rayOrigin: ray2.origin, rayDirection: ray2.direction, point: ptVector)
+                    if distance < smallestDistance {
+                        closestPoint = point
+                        smallestDistance = distance
+                    }
+                }
+
+                // Place a sphere node at the closest point
+                if let closestPoint = closestPoint {
+                    self.sphereNode.position = SCNVector3(closestPoint)
+                }
             }
         }
     }
@@ -181,6 +229,14 @@ extension SIMD3 where Scalar == Float {
 }
 
 extension SCNVector3 {
+    func transformed(by matrix: SCNMatrix4) -> SCNVector3 {
+        return SCNVector3(
+            matrix.m11 * self.x + matrix.m21 * self.y + matrix.m31 * self.z + matrix.m41,
+            matrix.m12 * self.x + matrix.m22 * self.y + matrix.m32 * self.z + matrix.m42,
+            matrix.m13 * self.x + matrix.m23 * self.y + matrix.m33 * self.z + matrix.m43
+        )
+    }
+    
     static func -(left: SCNVector3, right: SCNVector3) -> SCNVector3 {
         return SCNVector3Make(left.x - right.x, left.y - right.y, left.z - right.z)
     }
@@ -227,4 +283,5 @@ extension SCNView {
         return SCNVector3(vector.x / length, vector.y / length, vector.z / length)
     }
 }
+
 
