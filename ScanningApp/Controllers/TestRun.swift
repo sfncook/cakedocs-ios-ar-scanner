@@ -77,39 +77,53 @@ class TestRun {
     
     func didTapWhileTesting(_ gesture: UITapGestureRecognizer) {
         print("didTapWhileTesting")
+        
         let hitLocationInView = gesture.location(in: sceneView)
-        let hitTestResults = sceneView.hitTest(hitLocationInView, types: [.featurePoint])
-        if let result = hitTestResults.first {
-            print("Hooray! Points FOUND")
-            
-            // Add a new anchor at the tap location.
-            let anchor = ARAnchor(transform: result.worldTransform)
-            sceneView.session.add(anchor: anchor)
-            
-            // 1. Create an SCNText object
-            let textGeometry = SCNText(string: "Hello", extrusionDepth: 0.1)
-
-            // Set properties of the text (like font, color, etc.)
-            textGeometry.font = UIFont(name: "Arial", size: 0.5)
-            textGeometry.firstMaterial?.diffuse.contents = UIColor.red
-
-            // 2. Create an SCNNode with the text geometry
-            let textNode = SCNNode(geometry: textGeometry)
-
-            // Adjust the position or scale if necessary
-            print("\(anchor.transform.position.x),\(anchor.transform.position.y),\(anchor.transform.position.z)")
-//            textNode.position = SCNVector3(x: 0, y: 0, z: 0)
-            textNode.position = SCNVector3(x: anchor.transform.position.x, y: anchor.transform.position.y, z: anchor.transform.position.z)
-//            textNode.transform = SCNMatrix4(anchor.transform)
-            textNode.scale = SCNVector3(x: 0.1, y: 0.1, z: 0.1)
-
-            self.sceneView.scene.rootNode.addChildNode(textNode)
-            
-            // Track anchor ID to associate text with the anchor after ARKit creates a corresponding SKNode.
-//            anchorLabels[anchor.identifier] = identifierString
-        } else {
-            print("Point not found")
+        
+        // Get the ray in 3D space corresponding to the user's tap
+        guard let ray = sceneView.ray(through: hitLocationInView) else {
+            return
         }
+
+        // Get points from the referenceObjectPointCloud
+        let points = self.detectedObject!.getPoints()
+
+        // Find the point from the point cloud that is closest to the ray
+        var closestPoint: SIMD3<Float>? = nil
+        var smallestDistance = Float.infinity
+
+        for i in 0..<points.count {
+            let point = points[i]
+            let ptVector = point.scnVector3
+            let distance = distanceFromRay(rayOrigin: ray.origin, rayDirection: ray.direction, point: ptVector)
+            if distance < smallestDistance {
+                closestPoint = point
+                smallestDistance = distance
+            }
+        }
+
+        // Place a sphere node at the closest point
+        if let closestPoint = closestPoint {
+            let sphereNode = SCNNode(geometry: SCNSphere(radius: 0.005))  // Example radius
+            sphereNode.position = SCNVector3(closestPoint)
+            self.detectedObject?.addChildNode(sphereNode)
+        }
+    }
+
+    // This function calculates the shortest distance from a point to a ray
+    func distanceFromRay(rayOrigin: SCNVector3, rayDirection: SCNVector3, point: SCNVector3) -> Float {
+        let w = point - rayOrigin
+        let c1 = dot(w, rayDirection)
+        let c2 = dot(rayDirection, rayDirection)
+        let b = c1 / c2
+        let pb = rayOrigin + (rayDirection * b)
+        let delta = point - pb
+        return delta.length
+    }
+
+
+    func dot(_ left: SCNVector3, _ right: SCNVector3) -> Float {
+        return left.x * right.x + left.y * right.y + left.z * right.z
     }
     
     func successfulDetection(_ objectAnchor: ARObjectAnchor) {
@@ -159,3 +173,58 @@ class TestRun {
         noDetectionTimer = nil
     }
 }
+
+extension SIMD3 where Scalar == Float {
+    var scnVector3: SCNVector3 {
+        return SCNVector3(x: Float(self.x), y: Float(self.y), z: Float(self.z))
+    }
+}
+
+extension SCNVector3 {
+    static func -(left: SCNVector3, right: SCNVector3) -> SCNVector3 {
+        return SCNVector3Make(left.x - right.x, left.y - right.y, left.z - right.z)
+    }
+    
+    static func +(left: SCNVector3, right: SCNVector3) -> SCNVector3 {
+        return SCNVector3Make(left.x + right.x, left.y + right.y, left.z + right.z)
+    }
+    
+    static func *(vector: SCNVector3, scalar: Float) -> SCNVector3 {
+        return SCNVector3Make(vector.x * scalar, vector.y * scalar, vector.z * scalar)
+    }
+    
+    static func *(scalar: Float, vector: SCNVector3) -> SCNVector3 {
+        return SCNVector3Make(vector.x * scalar, vector.y * scalar, vector.z * scalar)
+    }
+    
+    var length: Float {
+        return sqrtf(x * x + y * y + z * z)
+    }
+    
+    public static func ==(lhs: SCNVector3, rhs: SCNVector3) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z
+    }
+    
+    public static func !=(lhs: SCNVector3, rhs: SCNVector3) -> Bool {
+        return !(lhs == rhs)
+    }
+}
+
+extension SCNView {
+    func ray(through point: CGPoint) -> (origin: SCNVector3, direction: SCNVector3, farPoint: SCNVector3)? {
+        let nearPoint = unprojectPoint(SCNVector3(x: Float(point.x), y: Float(point.y), z: 0))
+        let farPoint = unprojectPoint(SCNVector3(x: Float(point.x), y: Float(point.y), z: 1))
+        
+        guard nearPoint != farPoint else { return nil }
+        
+        let direction = normalize(vector: farPoint - nearPoint)
+        return (origin: nearPoint, direction: direction, farPoint: farPoint)
+    }
+    
+    private func normalize(vector: SCNVector3) -> SCNVector3 {
+        let length = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z)
+        guard length != 0 else { return SCNVector3(0, 0, 0) }
+        return SCNVector3(vector.x / length, vector.y / length, vector.z / length)
+    }
+}
+

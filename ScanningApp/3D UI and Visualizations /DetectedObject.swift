@@ -96,4 +96,12 @@ class DetectedObject: SCNNode {
     func updatePointCloud(_ currentPointCloud: ARPointCloud) {
         pointCloudVisualization.updateVisualization(for: currentPointCloud)
     }
+    
+    func getPoints() -> [SIMD3<Float>] {
+        return pointCloudVisualization.getPoints()
+    }
+    
+    func getCenter() -> SIMD3<Float> {
+        return pointCloudVisualization.getCenter()
+    }
 }

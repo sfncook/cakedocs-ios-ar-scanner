@@ -50,4 +50,12 @@ class DetectedPointCloud: SCNNode, PointCloud {
         let currentPointCloudInliers = inlierPoints
         self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12, type: .point)
     }
+    
+    func getPoints() -> [SIMD3<Float>] {
+        return referenceObjectPointCloud.points
+    }
+    
+    func getCenter() -> SIMD3<Float> {
+        return self.center
+    }
 }
