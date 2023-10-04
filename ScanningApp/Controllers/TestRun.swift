@@ -112,10 +112,8 @@ class TestRun {
         noDetectionTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
             self.cancelNoDetectionTimer()
             ViewController.instance?.displayMessage("""
-                Unable to detect the object.
-                Please point the device at the scanned object, rescan or add another scan
-                of this object in the current environment.
-                """, expirationTime: 5.0)
+                Shift the phone's position, please
+                """, expirationTime: 3.0)
         }
     }
     

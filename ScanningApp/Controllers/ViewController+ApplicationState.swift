@@ -106,17 +106,19 @@ extension ViewController {
                     self.scan?.state = .ready
                 }
                 testRun = nil
+                instructionsVisible = false
                 
                 startMaxScanTimeTimer()
             case .testing:
                 print("State: Testing")
-                self.setNavigationBarTitle("Test")
+                self.setNavigationBarTitle("")
                 scanModelButton.isHidden = true
                 loadModelButton.isHidden = true
 //                flashlightButton.isHidden = false
                 showMergeScanButton()
-                nextButton.isEnabled = true
-                nextButton.setTitle("Share", for: [])
+//                nextButton.isEnabled = true
+//                nextButton.setTitle("Share", for: [])
+                instructionsVisible = false
                 
                 testRun = TestRun(sceneView: sceneView)
                 testObjectDetection()
@@ -149,7 +151,7 @@ extension ViewController {
             case .defineBoundingBox:
                 print("State: Define bounding box")
                 self.displayInstruction(Message("Adjust the yellow bounding box"))
-                self.setNavigationBarTitle("Define bounding box")
+                self.setNavigationBarTitle("")
                 self.showBackButton(true)
                 self.nextButton.isEnabled = scan.boundingBoxExists
                 self.scanModelButton.isHidden = false
@@ -158,8 +160,7 @@ extension ViewController {
 //                self.flashlightButton.isHidden = true
                 self.nextButton.setTitle("Scan", for: [])
             case .scanning:
-                self.displayInstruction(Message("Scan the object from all sides that you are " +
-                    "interested in. Do not move the object while scanning!"))
+//                self.displayInstruction(Message("Scan the object"))
                 if let boundingBox = scan.scannedObject.boundingBox {
                     self.setNavigationBarTitle("Scan (\(boundingBox.progressPercentage)%)")
                 } else {
@@ -170,8 +171,7 @@ extension ViewController {
                 self.scanModelButton.isHidden = false
                 self.scanModelButton.setTitle("Done", for: [])
                 self.loadModelButton.isHidden = true
-//                self.flashlightButton.isHidden = true
-                self.nextButton.setTitle("Finish", for: [])
+                self.instructionsVisible = false
                 // Disable plane detection (even if no plane has been found yet at this time) for performance reasons.
                 self.sceneView.stopPlaneDetection()
             case .adjustingOrigin:
@@ -210,7 +210,7 @@ extension ViewController {
             }
         case .testing:
             state = .scanning
-            scan?.state = .adjustingOrigin
+            scan?.state = .scanning
         }
     }
     
@@ -228,7 +228,7 @@ extension ViewController {
                 case .defineBoundingBox:
                     scan.state = .scanning
                 case .scanning:
-                    scan.state = .adjustingOrigin
+                    state = .testing
                 case .adjustingOrigin:
                     state = .testing
                 }

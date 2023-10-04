@@ -340,7 +340,7 @@ class Scan {
         if state == .ready || state == .defineBoundingBox {
             if let points = frame.rawFeaturePoints {
                 // Automatically adjust the size of the bounding box.
-                self.scannedObject.fitOverPointCloud(points)
+//                self.scannedObject.fitOverPointCloud(points)
             }
         }
         

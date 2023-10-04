@@ -321,9 +321,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
         // 2. We encourage users to move the scanned object during testing, which invalidates
         //    the feature point cloud which was captured during scanning.
         self.scan = nil
-        self.displayInstruction(Message("""
-                    Test detection of the object from different angles. Consider moving the object to different environments and test there.
-                    """))
+//        self.displayInstruction(Message("""
+//                    Test detection of the object from different angles. Consider moving the object to different environments and test there.
+//                    """))
     }
     
     func createAndShareReferenceObject() {
@@ -460,11 +460,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
         if let objectAnchor = anchor as? ARObjectAnchor {
             if let testRun = self.testRun, objectAnchor.referenceObject == testRun.referenceObject {
                 testRun.successfulDetection(objectAnchor)
-                let messageText = """
-                    Object successfully detected from this angle.
-
-                    """ + testRun.statistics
-                displayMessage(messageText, expirationTime: testRun.resultDisplayDuration)
+//                let messageText = """
+//                    Object successfully detected from this angle.
+//
+//                    """ + testRun.statistics
+//                displayMessage(messageText, expirationTime: testRun.resultDisplayDuration)
             }
         } else if state == .scanning, let planeAnchor = anchor as? ARPlaneAnchor {
             scan?.scannedObject.tryToAlignWithPlanes([planeAnchor])

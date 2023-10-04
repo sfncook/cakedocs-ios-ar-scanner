@@ -97,7 +97,7 @@ class ScannedObject: SCNNode {
         guard !hitTestResults.isEmpty else { return }
         
         let userFocusPoint = hitTestResults[0].worldTransform.position
-        boundingBox.fitOverPointCloud(pointCloud, focusPoint: userFocusPoint)
+//        boundingBox.fitOverPointCloud(pointCloud, focusPoint: userFocusPoint)
     }
     
     func tryToAlignWithPlanes(_ anchors: [ARAnchor]) {
@@ -163,7 +163,7 @@ class ScannedObject: SCNNode {
             }
         } else {
             let boundingBox = BoundingBox(sceneView)
-            boundingBox.opacity = 0.25
+            boundingBox.opacity = 0.75
             self.addChildNode(boundingBox)
             boundingBox.extent = [1.0, 1.0, 1.0] * newExtent
             ghostBoundingBox = boundingBox
