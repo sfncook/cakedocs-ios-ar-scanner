@@ -11,8 +11,12 @@ import SceneKit
 extension ViewController: UIGestureRecognizerDelegate {
         
     @IBAction func didTap(_ gesture: UITapGestureRecognizer) {
+        print("ViewCtl.didTap")
         if state == .scanning {
             scan?.didTap(gesture)
+        } else if state == .testing {
+            print("ViewCtl.didTap  state == .testing")
+            testRun?.didTapWhileTesting(gesture)
         }
         
 //        instructionsVisible = false

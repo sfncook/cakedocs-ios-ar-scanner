@@ -75,6 +75,43 @@ class TestRun {
         startNoDetectionTimer()
     }
     
+    func didTapWhileTesting(_ gesture: UITapGestureRecognizer) {
+        print("didTapWhileTesting")
+        let hitLocationInView = gesture.location(in: sceneView)
+        let hitTestResults = sceneView.hitTest(hitLocationInView, types: [.featurePoint])
+        if let result = hitTestResults.first {
+            print("Hooray! Points FOUND")
+            
+            // Add a new anchor at the tap location.
+            let anchor = ARAnchor(transform: result.worldTransform)
+            sceneView.session.add(anchor: anchor)
+            
+            // 1. Create an SCNText object
+            let textGeometry = SCNText(string: "Hello", extrusionDepth: 0.1)
+
+            // Set properties of the text (like font, color, etc.)
+            textGeometry.font = UIFont(name: "Arial", size: 0.5)
+            textGeometry.firstMaterial?.diffuse.contents = UIColor.red
+
+            // 2. Create an SCNNode with the text geometry
+            let textNode = SCNNode(geometry: textGeometry)
+
+            // Adjust the position or scale if necessary
+            print("\(anchor.transform.position.x),\(anchor.transform.position.y),\(anchor.transform.position.z)")
+//            textNode.position = SCNVector3(x: 0, y: 0, z: 0)
+            textNode.position = SCNVector3(x: anchor.transform.position.x, y: anchor.transform.position.y, z: anchor.transform.position.z)
+//            textNode.transform = SCNMatrix4(anchor.transform)
+            textNode.scale = SCNVector3(x: 0.1, y: 0.1, z: 0.1)
+
+            self.sceneView.scene.rootNode.addChildNode(textNode)
+            
+            // Track anchor ID to associate text with the anchor after ARKit creates a corresponding SKNode.
+//            anchorLabels[anchor.identifier] = identifierString
+        } else {
+            print("Point not found")
+        }
+    }
+    
     func successfulDetection(_ objectAnchor: ARObjectAnchor) {
         
         // Compute the time it took to detect this object & the average.
