@@ -160,17 +160,28 @@ class DetectedPointCloud: SCNNode, PointCloud {
         manyAnnotations += 1
         let textGeometry = SCNText(string: "\(manyAnnotations)", extrusionDepth: 1)
         textGeometry.font = UIFont.systemFont(ofSize: 10)
-        textGeometry.firstMaterial?.diffuse.contents = UIColor.white
-
+        textGeometry.firstMaterial?.diffuse.contents = UIColor(red: 0.2588, green: 0.2824, blue: 0.4549, alpha: 1.0)
         let textNode = SCNNode(geometry: textGeometry)
-
         textNode.scale = SCNVector3(0.01, 0.01, 0.01)
+        let midX = (textGeometry.boundingBox.max.x + textGeometry.boundingBox.min.x) * 0.5
+        let midY = (textGeometry.boundingBox.max.y + textGeometry.boundingBox.min.y) * 0.5
+//        textNode.pivot = SCNMatrix4MakeTranslation(midX, midY, 0)
+        
+        let circleDiameter = CGFloat(max(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x,
+                                         textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y) * 1.5)  // Adjust as needed
+        let circleGeometry = SCNPlane(width: circleDiameter, height: circleDiameter)
+        circleGeometry.cornerRadius = 1
+        circleGeometry.firstMaterial?.diffuse.contents = UIColor(red: 0.8627, green: 0.8392, blue: 0.9686, alpha: 1.0)
+        let circleNode = SCNNode(geometry: circleGeometry)
+        circleNode.position = SCNVector3(x: midX, y: midY, z: 0.1)
         
         let billboardConstraint = SCNBillboardConstraint()
-        billboardConstraint.freeAxes = SCNBillboardAxis.Y
+        billboardConstraint.freeAxes = SCNBillboardAxis.all
         textNode.constraints = [billboardConstraint]
+        circleNode.constraints = [billboardConstraint]
 
         node.addChildNode(textNode)
+        textNode.addChildNode(circleNode)
     }
     
     func getPoints() -> [SIMD3<Float>] {
