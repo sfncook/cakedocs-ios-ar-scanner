@@ -16,6 +16,8 @@ class DetectedPointCloud: SCNNode, PointCloud {
     private var sidesNode = SCNNode()
     
     private var MANY_CUBES = 15.0
+    private var INCHES_15: Float = 0.381
+    private var INCHES_5: Float = 0.127
     
     init(referenceObjectPointCloud: ARPointCloud, center: SIMD3<Float>, extent: SIMD3<Float>) {
         self.referenceObjectPointCloud = referenceObjectPointCloud
@@ -31,9 +33,19 @@ class DetectedPointCloud: SCNNode, PointCloud {
         //        addChildNode(referenceObjectPoints)
         let minPt: SIMD3<Float> = simdPosition + center - extent / 2
         let maxPt: SIMD3<Float> = simdPosition + center + extent / 2
-
-        let volumeSize = maxPt - minPt
-        let childCubeSize = volumeSize / 15.0
+        
+        let deltaX = maxPt.x - minPt.x
+        let deltaY = maxPt.y - minPt.y
+        let deltaZ = maxPt.z - minPt.z
+        let diagDiameterM = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+        print("diagonal diameter meters: \(diagDiameterM)")
+        var childCubeSize = SIMD3<Float>(x: INCHES_5, y: INCHES_5, z: INCHES_5)
+        if(diagDiameterM < INCHES_15) {
+            let volumeSize = maxPt - minPt
+            childCubeSize = volumeSize / 4.0
+        }
+        let manyPerSide = diagDiameterM / childCubeSize
+        
 
         func isPointInsideCube(point: simd_float3, min: simd_float3, max: simd_float3) -> Bool {
             return point.x >= min.x && point.x <= max.x &&
@@ -41,9 +53,9 @@ class DetectedPointCloud: SCNNode, PointCloud {
                    point.z >= min.z && point.z <= max.z
         }
 
-        for x in 0..<15 {
-            for y in 0..<15 {
-                for z in 0..<15 {
+        for x in 0..<Int(floor(manyPerSide.x)) {
+            for y in 0..<Int(floor(manyPerSide.y)) {
+                for z in 0..<Int(floor(manyPerSide.z)) {
                     let childCubeMin = SIMD3<Float>(
                         Float(x) * childCubeSize.x + minPt.x,
                         Float(y) * childCubeSize.y + minPt.y,
