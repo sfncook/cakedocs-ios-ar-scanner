@@ -162,7 +162,9 @@ class TestRun {
         // Calculate the direction from the near point to the far point
         let direction = normalize(farVector - nearVector)
         
-        return (origin: nearVector, direction: direction)
+        let cameraTransform = sceneView.session.currentFrame?.camera.transform
+        let cameraMatrix = SCNMatrix4(cameraTransform!)
+        return (origin: nearVector.transformed(by: cameraMatrix), direction: direction.transformed(by: cameraMatrix))
     }
 
     func normalize(_ vector: SCNVector3) -> SCNVector3 {
@@ -171,6 +173,8 @@ class TestRun {
     }
 
     
+    private let semaphore = DispatchSemaphore(value: 1)
+    
     func updateOnEveryFrame() {
         if let detectedObject = self.detectedObject {
             if let currentPointCloud = self.sceneView.session.currentFrame?.rawFeaturePoints {
@@ -178,29 +182,40 @@ class TestRun {
             }
         }
         
-        if let referenceObject = self.referenceObject {
-            if let ray = rayFromCenterOfScreen(in: self.sceneView) {
-                let points = referenceObject.rawFeaturePoints.points
-                
-                // Find the point from the point cloud that is closest to the ray
-                var closestPoint: SIMD3<Float>? = nil
-                var smallestDistance = Float.infinity
-
-                for i in 0..<points.count {
-                    let point = points[i]
-                    let ptVector = point.scnVector3
-                    let distance = distanceFromRay(rayOrigin: ray2.origin, rayDirection: ray2.direction, point: ptVector)
-                    if distance < smallestDistance {
-                        closestPoint = point
-                        smallestDistance = distance
+        if semaphore.wait(timeout: .now() ) == .success {
+            DispatchQueue.main.async {
+                if let referenceObject = self.referenceObject {
+                    if let ray = self.rayFromCenterOfScreen(in: self.sceneView) {
+                        let points = referenceObject.rawFeaturePoints.points
+                        
+                        // Find the point from the point cloud that is closest to the ray
+                        var closestPoint: SIMD3<Float>? = nil
+                        var smallestDistance = Float.infinity
+                        
+                        for i in 0..<points.count {
+                            let point = points[i]
+                            let ptVector = point.scnVector3
+                            let distance = self.distanceFromRay(rayOrigin: ray.origin, rayDirection: ray.direction, point: ptVector)
+                            if distance < smallestDistance {
+                                closestPoint = point
+                                smallestDistance = distance
+                            }
+                        }
+                        
+                        // Place a sphere node at the closest point
+                        if let closestPoint = closestPoint {
+                            self.sphereNode.position = SCNVector3(closestPoint)
+                        } else {
+                            print("Place sphere: No closestPoint")
+                        }
                     }
+                } else {
+                    print("Place sphere: No reference object")
                 }
-
-                // Place a sphere node at the closest point
-                if let closestPoint = closestPoint {
-                    self.sphereNode.position = SCNVector3(closestPoint)
-                }
-            }
+                self.semaphore.signal()
+            }//DispatchQueue.main.async
+        } else {
+//            print("Place sphere: Thread blocked, skipping")
         }
     }
     
