@@ -85,7 +85,7 @@ class DetectedPointCloud: SCNNode, PointCloud {
                         childCubeNode.position = SCNVector3(childCubeCenter.x, childCubeCenter.y, childCubeCenter.z)
                         
                         let material = SCNMaterial()
-                        material.diffuse.contents = UIColor(red:0.9, green:0.9, blue:1.0, alpha:0.7)
+                        material.diffuse.contents = UIColor.clear // change this to a color in order to see all child cubes
                         material.lightingModel = .constant
                         material.isDoubleSided = true
                         childCube.materials = [material]
