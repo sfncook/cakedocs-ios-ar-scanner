@@ -15,9 +15,10 @@ class DetectedPointCloud: SCNNode, PointCloud {
     private let extent: SIMD3<Float>
     private var sidesNode = SCNNode()
     
-    private var MANY_CUBES = 15.0
-    private var INCHES_15: Float = 0.381
-    private var INCHES_5: Float = 0.127
+    private let MANY_CUBES = 15.0
+    private let INCHES_15: Float = 0.381
+    private let INCHES_5: Float = 0.127
+    private var manyAnnotations = 0
     
     init(referenceObjectPointCloud: ARPointCloud, center: SIMD3<Float>, extent: SIMD3<Float>) {
         self.referenceObjectPointCloud = referenceObjectPointCloud
@@ -143,14 +144,33 @@ class DetectedPointCloud: SCNNode, PointCloud {
         if !hitResults.isEmpty {
             print("Hit! \(hitResults.count)")
             let result = hitResults[0]
-            let material = SCNMaterial()
-            material.diffuse.contents = UIColor(red:1.0, green:0.9, blue:0.9, alpha:0.7)
-            material.lightingModel = .constant
-            material.isDoubleSided = true
-            if let geometry = result.node.geometry, let material = geometry.firstMaterial {
-                material.diffuse.contents = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
-            }
+            let hitNode = result.node
+            addAnnotation(node: hitNode)
+//            let material = SCNMaterial()
+//            material.diffuse.contents = UIColor(red:1.0, green:0.9, blue:0.9, alpha:0.7)
+//            material.lightingModel = .constant
+//            material.isDoubleSided = true
+//            if let geometry = result.node.geometry, let material = geometry.firstMaterial {
+//                material.diffuse.contents = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
+//            }
         }
+    }
+    
+    func addAnnotation(node: SCNNode) {
+        manyAnnotations += 1
+        let textGeometry = SCNText(string: "\(manyAnnotations)", extrusionDepth: 1)
+        textGeometry.font = UIFont.systemFont(ofSize: 10)
+        textGeometry.firstMaterial?.diffuse.contents = UIColor.white
+
+        let textNode = SCNNode(geometry: textGeometry)
+
+        textNode.scale = SCNVector3(0.01, 0.01, 0.01)
+        
+        let billboardConstraint = SCNBillboardConstraint()
+        billboardConstraint.freeAxes = SCNBillboardAxis.Y
+        textNode.constraints = [billboardConstraint]
+
+        node.addChildNode(textNode)
     }
     
     func getPoints() -> [SIMD3<Float>] {
