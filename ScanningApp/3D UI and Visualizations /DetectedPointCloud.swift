@@ -133,22 +133,22 @@ class DetectedPointCloud: SCNNode, PointCloud {
     }
     
     func updateCubes(sceneView: ARSCNView, screenPos: CGPoint) {
-        guard let camera = sceneView.pointOfView else { return }
-        
         let hitResults = sceneView.hitTest(screenPos, options: [
             .rootNode: sidesNode,
-            .ignoreHiddenNodes: false])
+            .ignoreHiddenNodes: true,
+            .backFaceCulling: true,
+            .searchMode: SCNHitTestSearchMode.all.rawValue
+        ])
         
         if !hitResults.isEmpty {
             print("Hit! \(hitResults.count)")
-            for result in hitResults {
-                let material = SCNMaterial()
-                material.diffuse.contents = UIColor(red:1.0, green:0.9, blue:0.9, alpha:0.7)
-                material.lightingModel = .constant
-                material.isDoubleSided = true
-                if let geometry = result.node.geometry, let material = geometry.firstMaterial {
-                    material.diffuse.contents = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
-                }
+            let result = hitResults[0]
+            let material = SCNMaterial()
+            material.diffuse.contents = UIColor(red:1.0, green:0.9, blue:0.9, alpha:0.7)
+            material.lightingModel = .constant
+            material.isDoubleSided = true
+            if let geometry = result.node.geometry, let material = geometry.firstMaterial {
+                material.diffuse.contents = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
             }
         }
     }
