@@ -80,35 +80,8 @@ class TestRun {
     }
     
     func didTapWhileTesting(_ gesture: UITapGestureRecognizer) {
-        let hitLocationInView = gesture.location(in: sceneView)
-        
-        // Get the ray in 3D space corresponding to the user's tap
-        guard let ray = sceneView.ray(through: hitLocationInView) else {
-            return
-        }
-
-        // Get points from the referenceObjectPointCloud
-        let points = self.detectedObject!.getPoints()
-
-        // Find the point from the point cloud that is closest to the ray
-        var closestPoint: SIMD3<Float>? = nil
-        var smallestDistance = Float.infinity
-
-        for i in 0..<points.count {
-            let point = points[i]
-            let ptVector = point.scnVector3
-            let distance = distanceFromRay(rayOrigin: ray.origin, rayDirection: ray.direction, point: ptVector)
-            if distance < smallestDistance {
-                closestPoint = point
-                smallestDistance = distance
-            }
-        }
-
-        // Place a sphere node at the closest point
-        if let closestPoint = closestPoint {
-            let sphereNode = SCNNode(geometry: SCNSphere(radius: 0.005))
-            sphereNode.position = SCNVector3(closestPoint)
-            self.detectedObject?.addChildNode(sphereNode)
+        if let detectedObject = self.detectedObject {
+            detectedObject.updateCubes(sceneView: sceneView, screenPos: gesture.location(in: sceneView))
         }
     }
 

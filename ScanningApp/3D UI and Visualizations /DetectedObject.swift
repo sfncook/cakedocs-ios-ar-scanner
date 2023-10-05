@@ -97,6 +97,10 @@ class DetectedObject: SCNNode {
         pointCloudVisualization.updateVisualization(for: currentPointCloud)
     }
     
+    func updateCubes(sceneView: ARSCNView, screenPos: CGPoint) {
+        pointCloudVisualization.updateCubes(sceneView: sceneView, screenPos: screenPos)
+    }
+    
     func getPoints() -> [SIMD3<Float>] {
         return pointCloudVisualization.getPoints()
     }

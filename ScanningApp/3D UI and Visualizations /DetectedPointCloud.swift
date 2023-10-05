@@ -13,6 +13,9 @@ class DetectedPointCloud: SCNNode, PointCloud {
     private let referenceObjectPointCloud: ARPointCloud
     private let center: SIMD3<Float>
     private let extent: SIMD3<Float>
+    private var sidesNode = SCNNode()
+    
+    private var MANY_CUBES = 15.0
     
     init(referenceObjectPointCloud: ARPointCloud, center: SIMD3<Float>, extent: SIMD3<Float>) {
         self.referenceObjectPointCloud = referenceObjectPointCloud
@@ -20,16 +23,17 @@ class DetectedPointCloud: SCNNode, PointCloud {
         self.extent = extent
         super.init()
         
+        self.addChildNode(self.sidesNode)
+        
         // Semitransparently visualize the reference object's points.
         //        let referenceObjectPoints = SCNNode()
         //        referenceObjectPoints.geometry = createVisualization(for: referenceObjectPointCloud.points, color: .appYellow, size: 12, type: .point)
         //        addChildNode(referenceObjectPoints)
-        let extPartial = extent / 3
         let minPt: SIMD3<Float> = simdPosition + center - extent / 2
         let maxPt: SIMD3<Float> = simdPosition + center + extent / 2
 
         let volumeSize = maxPt - minPt
-        let childCubeSize = volumeSize / 3.0
+        let childCubeSize = volumeSize / 15.0
 
         func isPointInsideCube(point: simd_float3, min: simd_float3, max: simd_float3) -> Bool {
             return point.x >= min.x && point.x <= max.x &&
@@ -37,9 +41,9 @@ class DetectedPointCloud: SCNNode, PointCloud {
                    point.z >= min.z && point.z <= max.z
         }
 
-        for x in 0..<3 {
-            for y in 0..<3 {
-                for z in 0..<3 {
+        for x in 0..<15 {
+            for y in 0..<15 {
+                for z in 0..<15 {
                     let childCubeMin = SIMD3<Float>(
                         Float(x) * childCubeSize.x + minPt.x,
                         Float(y) * childCubeSize.y + minPt.y,
@@ -74,7 +78,7 @@ class DetectedPointCloud: SCNNode, PointCloud {
                         material.isDoubleSided = true
                         childCube.materials = [material]
                         
-                        addChildNode(childCubeNode)
+                        self.sidesNode.addChildNode(childCubeNode)
                     }
                 }
             }
@@ -114,6 +118,27 @@ class DetectedPointCloud: SCNNode, PointCloud {
 //        
 //        let currentPointCloudInliers = inlierPoints
 //        self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12, type: .point)
+    }
+    
+    func updateCubes(sceneView: ARSCNView, screenPos: CGPoint) {
+        guard let camera = sceneView.pointOfView else { return }
+        
+        let hitResults = sceneView.hitTest(screenPos, options: [
+            .rootNode: sidesNode,
+            .ignoreHiddenNodes: false])
+        
+        if !hitResults.isEmpty {
+            print("Hit! \(hitResults.count)")
+            for result in hitResults {
+                let material = SCNMaterial()
+                material.diffuse.contents = UIColor(red:1.0, green:0.9, blue:0.9, alpha:0.7)
+                material.lightingModel = .constant
+                material.isDoubleSided = true
+                if let geometry = result.node.geometry, let material = geometry.firstMaterial {
+                    material.diffuse.contents = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
+                }
+            }
+        }
     }
     
     func getPoints() -> [SIMD3<Float>] {
