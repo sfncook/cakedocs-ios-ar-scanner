@@ -42,6 +42,7 @@
 		C4A938C5208799D3008D5D13 /* Tile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A938C4208799D3008D5D13 /* Tile.swift */; };
 		C4B16A0820AF2DEE00BE6B5B /* FlashlightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B16A0720AF2DEE00BE6B5B /* FlashlightButton.swift */; };
 		C4CE2699203AF7A1007B12A5 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CE2690203AF7A1007B12A5 /* RoundedButton.swift */; };
+		D4065F372ACF383800C19388 /* CubeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4065F362ACF383800C19388 /* CubeNode.swift */; };
 		D408B81E2ACCD0D40087D112 /* flower.png in Resources */ = {isa = PBXBuildFile; fileRef = D408B81D2ACCD0D40087D112 /* flower.png */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +86,7 @@
 		C4A938C4208799D3008D5D13 /* Tile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tile.swift; sourceTree = "<group>"; };
 		C4B16A0720AF2DEE00BE6B5B /* FlashlightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlashlightButton.swift; sourceTree = "<group>"; };
 		C4CE2690203AF7A1007B12A5 /* RoundedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		D4065F362ACF383800C19388 /* CubeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubeNode.swift; sourceTree = "<group>"; };
 		D408B81D2ACCD0D40087D112 /* flower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flower.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,6 +117,7 @@
 				C42056AD20C75C9D003754C1 /* Snapping.swift */,
 				C4A938C4208799D3008D5D13 /* Tile.swift */,
 				3947D3FF2076927E00BDBE95 /* Wireframe.swift */,
+				D4065F362ACF383800C19388 /* CubeNode.swift */,
 			);
 			name = "3D UI and Visualizations ";
 			path = "ScanningApp/3D UI and Visualizations ";
@@ -334,6 +337,7 @@
 				395C9948200707A30025413C /* AppDelegate.swift in Sources */,
 				39D6E984207B1D05002CF536 /* ViewController+ApplicationState.swift in Sources */,
 				3947D4002076927E00BDBE95 /* Wireframe.swift in Sources */,
+				D4065F372ACF383800C19388 /* CubeNode.swift in Sources */,
 				C47CE842207B96830011A27B /* PointCloud+CreateVisualization.swift in Sources */,
 				C4CE2699203AF7A1007B12A5 /* RoundedButton.swift in Sources */,
 				390033F4206F143F00C61E5D /* ScannedPointCloud.swift in Sources */,

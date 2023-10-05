@@ -198,41 +198,41 @@ class TestRun {
             }
         }
         
-        if semaphore.wait(timeout: .now() ) == .success {
-            DispatchQueue.main.async {
-                if let referenceObject = self.referenceObject {
-                    if let ray = self.rayFromCenterOfScreen(in: self.sceneView) {
-                        let points = referenceObject.rawFeaturePoints.points
-                        
-                        // Find the point from the point cloud that is closest to the ray
-                        var closestPoint: SIMD3<Float>? = nil
-                        var smallestDistance = Float.infinity
-                        
-                        for i in 0..<points.count {
-                            let point = points[i]
-                            let ptVector = point.scnVector3
-                            let distance = self.distanceFromRay(rayOrigin: ray.origin, rayDirection: ray.direction, point: ptVector)
-                            if distance < smallestDistance {
-                                closestPoint = point
-                                smallestDistance = distance
-                            }
-                        }
-                        
-                        // Place a sphere node at the closest point
-                        if let closestPoint = closestPoint {
-                            self.sphereNode.position = SCNVector3(closestPoint)
-                        } else {
-                            print("Place sphere: No closestPoint")
-                        }
-                    }
-                } else {
-                    print("Place sphere: No reference object")
-                }
-                self.semaphore.signal()
-            }//DispatchQueue.main.async
-        } else {
-//            print("Place sphere: Thread blocked, skipping")
-        }
+//        if semaphore.wait(timeout: .now() ) == .success {
+//            DispatchQueue.main.async {
+//                if let referenceObject = self.referenceObject {
+//                    if let ray = self.rayFromCenterOfScreen(in: self.sceneView) {
+//                        let points = referenceObject.rawFeaturePoints.points
+//                        
+//                        // Find the point from the point cloud that is closest to the ray
+//                        var closestPoint: SIMD3<Float>? = nil
+//                        var smallestDistance = Float.infinity
+//                        
+//                        for i in 0..<points.count {
+//                            let point = points[i]
+//                            let ptVector = point.scnVector3
+//                            let distance = self.distanceFromRay(rayOrigin: ray.origin, rayDirection: ray.direction, point: ptVector)
+//                            if distance < smallestDistance {
+//                                closestPoint = point
+//                                smallestDistance = distance
+//                            }
+//                        }
+//                        
+//                        // Place a sphere node at the closest point
+//                        if let closestPoint = closestPoint {
+//                            self.sphereNode.position = SCNVector3(closestPoint)
+//                        } else {
+//                            print("Place sphere: No closestPoint")
+//                        }
+//                    }
+//                } else {
+//                    print("Place sphere: No reference object")
+//                }
+//                self.semaphore.signal()
+//            }//DispatchQueue.main.async
+//        } else {
+////            print("Place sphere: Thread blocked, skipping")
+//        }
     }
     
     var noDetectionTimer: Timer?
