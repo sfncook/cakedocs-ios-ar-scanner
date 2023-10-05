@@ -31,29 +31,55 @@ class DetectedPointCloud: SCNNode, PointCloud {
         let volumeSize = maxPt - minPt
         let childCubeSize = volumeSize / 3.0
 
+        func isPointInsideCube(point: simd_float3, min: simd_float3, max: simd_float3) -> Bool {
+            return point.x >= min.x && point.x <= max.x &&
+                   point.y >= min.y && point.y <= max.y &&
+                   point.z >= min.z && point.z <= max.z
+        }
+
         for x in 0..<3 {
             for y in 0..<3 {
                 for z in 0..<3 {
-                    let childCubePosition = SIMD3<Float>(
-                        Float(x) * childCubeSize.x + childCubeSize.x/2 + minPt.x,
-                        Float(y) * childCubeSize.y + childCubeSize.y/2 + minPt.y,
-                        Float(z) * childCubeSize.z + childCubeSize.z/2 + minPt.z
+                    let childCubeMin = SIMD3<Float>(
+                        Float(x) * childCubeSize.x + minPt.x,
+                        Float(y) * childCubeSize.y + minPt.y,
+                        Float(z) * childCubeSize.z + minPt.z
                     )
                     
-                    let childCube = SCNBox(width: CGFloat(childCubeSize.x * 0.95), height: CGFloat(childCubeSize.y*0.95), length: CGFloat(childCubeSize.z*0.95), chamferRadius: 0)
-                    let childCubeNode = SCNNode(geometry: childCube)
-                    childCubeNode.position = SCNVector3(childCubePosition.x, childCubePosition.y, childCubePosition.z)
+                    let childCubeMax = childCubeMin + childCubeSize
                     
-                    let material = SCNMaterial()
-                    material.diffuse.contents = UIColor(red:0.9, green:0.9, blue:1.0, alpha:0.7)
-                    material.lightingModel = .constant
-                    material.isDoubleSided = true
-                    childCube.materials = [material]
+                    var hasPointInside = false
                     
-                    addChildNode(childCubeNode)
+                    for point in referenceObjectPointCloud.points {
+                        if isPointInsideCube(point: point, min: childCubeMin, max: childCubeMax) {
+                            hasPointInside = true
+                            break
+                        }
+                    }
+                    
+                    if hasPointInside {
+                        let childCubeCenter = SIMD3<Float>(
+                            childCubeMin.x + childCubeSize.x / 2,
+                            childCubeMin.y + childCubeSize.y / 2,
+                            childCubeMin.z + childCubeSize.z / 2
+                        )
+                        
+                        let childCube = SCNBox(width: CGFloat(childCubeSize.x), height: CGFloat(childCubeSize.y), length: CGFloat(childCubeSize.z), chamferRadius: 0)
+                        let childCubeNode = SCNNode(geometry: childCube)
+                        childCubeNode.position = SCNVector3(childCubeCenter.x, childCubeCenter.y, childCubeCenter.z)
+                        
+                        let material = SCNMaterial()
+                        material.diffuse.contents = UIColor(red:0.9, green:0.9, blue:1.0, alpha:0.7)
+                        material.lightingModel = .constant
+                        material.isDoubleSided = true
+                        childCube.materials = [material]
+                        
+                        addChildNode(childCubeNode)
+                    }
                 }
             }
         }
+
 
         
 //        addChildNode(CubeNode(position: SCNVector3(x: min.x, y: min.y, z: min.z)))
