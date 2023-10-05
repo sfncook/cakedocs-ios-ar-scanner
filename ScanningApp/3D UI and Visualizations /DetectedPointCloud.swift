@@ -32,23 +32,23 @@ class DetectedPointCloud: SCNNode, PointCloud {
     }
     
     func updateVisualization(for currentPointCloud: ARPointCloud) {
-        guard !self.isHidden else { return }
-        
-        let min: SIMD3<Float> = simdPosition + center - extent / 2
-        let max: SIMD3<Float> = simdPosition + center + extent / 2
-        var inlierPoints: [SIMD3<Float>] = []
-        
-        for point in currentPointCloud.points {
-            let localPoint = self.simdConvertPosition(point, from: nil)
-            if (min.x..<max.x).contains(localPoint.x) &&
-                (min.y..<max.y).contains(localPoint.y) &&
-                (min.z..<max.z).contains(localPoint.z) {
-                inlierPoints.append(localPoint)
-            }
-        }
-        
-        let currentPointCloudInliers = inlierPoints
-        self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12, type: .point)
+//        guard !self.isHidden else { return }
+//        
+//        let min: SIMD3<Float> = simdPosition + center - extent / 2
+//        let max: SIMD3<Float> = simdPosition + center + extent / 2
+//        var inlierPoints: [SIMD3<Float>] = []
+//        
+//        for point in currentPointCloud.points {
+//            let localPoint = self.simdConvertPosition(point, from: nil)
+//            if (min.x..<max.x).contains(localPoint.x) &&
+//                (min.y..<max.y).contains(localPoint.y) &&
+//                (min.z..<max.z).contains(localPoint.z) {
+//                inlierPoints.append(localPoint)
+//            }
+//        }
+//        
+//        let currentPointCloudInliers = inlierPoints
+//        self.geometry = createVisualization(for: currentPointCloudInliers, color: .appGreen, size: 12, type: .point)
     }
     
     func getPoints() -> [SIMD3<Float>] {

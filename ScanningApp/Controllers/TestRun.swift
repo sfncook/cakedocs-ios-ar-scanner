@@ -161,10 +161,26 @@ class TestRun {
         
         // Calculate the direction from the near point to the far point
         let direction = normalize(farVector - nearVector)
+        let rayCamera = (origin: nearVector, direction: direction)
         
+        // Convert from Camera coords --> World coords
         let cameraTransform = sceneView.session.currentFrame?.camera.transform
         let cameraMatrix = SCNMatrix4(cameraTransform!)
-        return (origin: nearVector.transformed(by: cameraMatrix), direction: direction.transformed(by: cameraMatrix))
+        let rayWorld = (origin: rayCamera.origin.transformed(by: cameraMatrix), direction: normalize(rayCamera.direction.transformed(by: cameraMatrix)))
+        
+        let objectMatrix = self.detectedObject!.transform
+        // Convert the world transform of the object to an SCNMatrix4
+//            let objectMatrix = SCNMatrix4(objectTransform)
+        
+        // Compute the inverse of the object's transformation matrix
+        let inverseObjectMatrix = SCNMatrix4Invert(objectMatrix)
+        
+        // Transform the ray's origin and direction by the inverse matrix
+        let rayObjectOrigin = rayWorld.origin.transformed(by: inverseObjectMatrix)
+        let rayObjectDirection = rayWorld.direction.transformed(by: inverseObjectMatrix)
+        let rayObject = (origin: rayObjectOrigin, direction: normalize(rayObjectDirection))
+        
+        return rayObject
     }
 
     func normalize(_ vector: SCNVector3) -> SCNVector3 {
