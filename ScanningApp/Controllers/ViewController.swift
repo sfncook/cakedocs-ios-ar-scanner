@@ -358,7 +358,26 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
         task.resume()
     }
     
-    func createAndShareReferenceObject() {
+    func getProcedureTitle(completionHandler: @escaping (String?) -> Void) {
+        let alertController = UIAlertController(title: "Input Procedure Title", message: nil, preferredStyle: .alert)
+        alertController.addTextField { textField in
+            textField.placeholder = "Procedure Title"
+        }
+        
+        let submitAction = UIAlertAction(title: "Submit", style: .default) { _ in
+            let userInput = alertController.textFields?.first?.text
+            completionHandler(userInput)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(submitAction)
+        alertController.addAction(cancelAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func saveArModelAndUpload(completionHandler: @escaping (String) -> Void) {
         guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
             print("Error: Missing scanned object.")
             return
@@ -380,19 +399,66 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                         switch result {
                         case .success(let responseString):
                             print("Success: \(responseString)")
+                            if let data = responseString.data(using: .utf8) {
+                                do {
+                                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                                       let filename = json["filename"] as? String {
+                                        completionHandler(filename)
+                                    }
+                                } catch {
+                                    print("Error parsing JSON: \(error)")
+                                }
+                            }
                         case .failure(let error):
                             print("Error: \(error)")
                         }
                     }
                 }
             }
+        }
+    }
+    
+    func saveProcedure(procedureTitle: String, arModelFilename: String, completionHandler: @escaping () -> Void) {
+        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/procedures")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let json: [String: Any] = [
+            "name": procedureTitle,
+            "ar_model": arModelFilename,
+            "steps": []
+        ]
+
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        request.httpBody = jsonData
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print(error?.localizedDescription ?? "No data")
+                return
+            }
             
-            // AirDrop
-            // Initiate a share sheet for the scanned object
-//            DispatchQueue.main.async {
-//                let airdropShareSheet = ShareScanViewController(sourceView: self.nextButton, sharedObject: documentURL)
-//                self.present(airdropShareSheet, animated: true, completion: nil)
-//            }
+            let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
+            if let responseJSON = responseJSON as? [String: Any] {
+                print(responseJSON)
+            }
+        }
+
+        task.resume()
+    }
+    
+    func createAndShareReferenceObject() {
+        getProcedureTitle() { userInput in
+            if let procedureTitle = userInput, !procedureTitle.isEmpty {
+                print("Procedure Title: \(procedureTitle)")
+                self.saveArModelAndUpload() { arModelFilename in
+                    print("ARModel Filename: \(arModelFilename)")
+                    self.saveProcedure(procedureTitle: procedureTitle, arModelFilename: arModelFilename) {
+                        print("Save Complete.")
+                    }
+                }
+            }
         }
     }
     
