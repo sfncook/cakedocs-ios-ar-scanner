@@ -330,6 +330,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
 //                    """))
     }
     
+    func uploadFile(url: URL, fileURL: URL, completion: @escaping (Result<String, Error>) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var data = Data()
+        
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileURL.lastPathComponent)\"\r\n".data(using: .utf8)!)
+        data.append("Content-Type: application/octet-stream\r\n\r\n".data(using: .utf8)!)
+        data.append(try! Data(contentsOf: fileURL))
+        data.append("\r\n".data(using: .utf8)!)
+        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        let task = URLSession.shared.uploadTask(with: request, from: data) { (data, response, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                completion(.success(responseString))
+            }
+        }
+        task.resume()
+    }
+    
     func createAndShareReferenceObject() {
         guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
             print("Error: Missing scanned object.")
@@ -347,9 +375,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             
             // Initiate a share sheet for the scanned object
             DispatchQueue.main.async {
-                let airdropShareSheet = ShareScanViewController(sourceView: self.nextButton, sharedObject: documentURL)
-                self.present(airdropShareSheet, animated: true, completion: nil)
+                if let fileURL = URL(string: documentURL.absoluteString), let uploadURL = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model") {
+                    self.uploadFile(url: uploadURL, fileURL: fileURL) { result in
+                        switch result {
+                        case .success(let responseString):
+                            print("Success: \(responseString)")
+                        case .failure(let error):
+                            print("Error: \(error)")
+                        }
+                    }
+                }
             }
+            
+            // AirDrop
+            // Initiate a share sheet for the scanned object
+//            DispatchQueue.main.async {
+//                let airdropShareSheet = ShareScanViewController(sourceView: self.nextButton, sharedObject: documentURL)
+//                self.present(airdropShareSheet, animated: true, completion: nil)
+//            }
         }
     }
     
