@@ -206,6 +206,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             self.present(documentPicker, animated: true, completion: nil)
         }
     }
+
     
     @IBAction func loadModelButtonTapped(_ sender: Any) {
         guard !loadModelButton.isHidden && loadModelButton.isEnabled else { return }
@@ -213,16 +214,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
         if(state == .testing) {
             createAndShareReferenceObject()
         } else {
-            let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.apple.arobject"], in: .import)
-            documentPicker.delegate = self
-            
-            documentPicker.modalPresentationStyle = .overCurrentContext
-            documentPicker.popoverPresentationController?.sourceView = self.loadModelButton
-            documentPicker.popoverPresentationController?.sourceRect = self.loadModelButton.bounds
-            
-            DispatchQueue.main.async {
-                self.present(documentPicker, animated: true, completion: nil)
-            }
+            loadProcedure()
+//            let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.apple.arobject"], in: .import)
+//            documentPicker.delegate = self
+//            
+//            documentPicker.modalPresentationStyle = .overCurrentContext
+//            documentPicker.popoverPresentationController?.sourceView = self.loadModelButton
+//            documentPicker.popoverPresentationController?.sourceRect = self.loadModelButton.bounds
+//            
+//            DispatchQueue.main.async {
+//                self.present(documentPicker, animated: true, completion: nil)
+//            }
         }
     }
     
@@ -457,6 +459,47 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                     self.saveProcedure(procedureTitle: procedureTitle, arModelFilename: arModelFilename) {
                         print("Save Complete.")
                     }
+                }
+            }
+        }
+    }
+    
+    func fetchProcedure(procedureTitle: String, completionHandler: @escaping (String, String) -> Void) {
+        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/procedures/\(procedureTitle)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        print("Sending fetch request")
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            print("Fetch response received")
+            guard let data = data, error == nil else {
+                print(error?.localizedDescription ?? "No data")
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    let procedureName = json["name"] as! String
+                    let arModelFilename = json["ar_model"] as! String
+                    completionHandler(procedureName, arModelFilename)
+                } else {
+                    print("Unable to parse JSON")
+                }
+            } catch {
+                print("Error parsing JSON: \(error)")
+            }
+        }
+
+        task.resume()
+    }
+    
+    func loadProcedure() {
+        getProcedureTitle() { userInput in
+            if let procedureTitle = userInput, !procedureTitle.isEmpty {
+                print("Procedure Title: \(procedureTitle)")
+                self.fetchProcedure(procedureTitle: procedureTitle) { procedureName, arModelFilename in
+                    print("Done Fetching: procedureName:\(procedureName) arModelFilename:\(arModelFilename)")
                 }
             }
         }
