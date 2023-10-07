@@ -385,28 +385,54 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
 //    func saveArModelAndUpload(completionHandler: @escaping (String) -> Void) {
     func saveArModelAndUpload() {
         print("Saving testing file")
-        sceneView.session.getCurrentWorldMap { worldMap, error in
-            guard let map = worldMap
-                else { self.showAlert(title: "Can't get current world map", message: error!.localizedDescription); return }
 
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
-                let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
-                request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
-                let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
-                    if let error = error {
-                        print("Error uploading data:", error)
-                    } else if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                        print("Received response:", responseString)
-                    }
+        do {
+            guard let testRun = self.testRun, let object = testRun.referenceObject
+                else { print("can't get refObject"); return }
+            let data = try NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
+            let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing5")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+            let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+                if let error = error {
+                    print("Error uploading data:", error)
+                } else if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Received response:", responseString)
                 }
-                task.resume()
-            } catch {
-                fatalError("Can't save map: \(error.localizedDescription)")
             }
+            task.resume()
+        } catch {
+            fatalError("Can't save map: \(error.localizedDescription)")
         }
+        
+        // World map
+//        sceneView.session.getCurrentWorldMap { worldMap, error in
+//            guard let map = worldMap
+//                else { self.showAlert(title: "Can't get current world map", message: error!.localizedDescription); return }
+//
+//            do {
+//                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+//                let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
+//                var request = URLRequest(url: url)
+//                request.httpMethod = "POST"
+//                request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+//                let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+//                    if let error = error {
+//                        print("Error uploading data:", error)
+//                    } else if let data = data, let responseString = String(data: data, encoding: .utf8) {
+//                        print("Received response:", responseString)
+//                    }
+//                }
+//                task.resume()
+//            } catch {
+//                fatalError("Can't save map: \(error.localizedDescription)")
+//            }
+//        }
+        
+        
+        
+        
 //        guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
 //            print("Error: Missing scanned object.")
 //            return
@@ -524,10 +550,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     
     func loadProcedure() {
         print("loading testing file")
-        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
+        
+        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing5")!
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard error == nil else {
-                print("Error downloading ARWorldMap: \(error!)")
+                print("Error downloading test file: \(error!)")
                 return
             }
 
@@ -537,19 +564,53 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             }
 
             do {
-                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data) else {
-                    fatalError("No ARWorldMap in archive.")
+                guard let referenceObject = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARReferenceObject.self, from: data) else {
+                    fatalError("No ARReferenceObject in archive.")
                 }
                 
                 // Use the worldMap object here
-                print("Successfully unarchived ARWorldMap!")
+                print("Successfully unarchived ARReferenceObject!")
+                
+                DispatchQueue.main.async {
+                    self.referenceObjectToTest = referenceObject
+                    self.state = .testing
+                    print("3. Done.")
+                }
 
             } catch {
-                print("Error unarchiving ARWorldMap: \(error)")
+                print("Error unarchiving ARReferenceObject: \(error)")
             }
         }
 
         task.resume()
+        
+        // Load world file
+//        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
+//        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+//            guard error == nil else {
+//                print("Error downloading ARWorldMap: \(error!)")
+//                return
+//            }
+//
+//            guard let data = data else {
+//                print("No data returned from the server!")
+//                return
+//            }
+//
+//            do {
+//                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data) else {
+//                    fatalError("No ARWorldMap in archive.")
+//                }
+//                
+//                // Use the worldMap object here
+//                print("Successfully unarchived ARWorldMap!")
+//
+//            } catch {
+//                print("Error unarchiving ARWorldMap: \(error)")
+//            }
+//        }
+//
+//        task.resume()
 
         
 //        getProcedureTitle() { userInput in
