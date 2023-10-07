@@ -215,6 +215,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             createAndShareReferenceObject()
         } else {
             loadProcedure()
+            
+            
 //            let documentPicker = UIDocumentPickerViewController(documentTypes: ["com.apple.arobject"], in: .import)
 //            documentPicker.delegate = self
 //            
@@ -255,6 +257,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
+        print("====> \(url.absoluteString)")
         readFile(url)
     }
     
@@ -379,45 +382,69 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func saveArModelAndUpload(completionHandler: @escaping (String) -> Void) {
-        guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
-            print("Error: Missing scanned object.")
-            return
-        }
-        
-        let documentURL = FileManager.default.temporaryDirectory.appendingPathComponent(name + ".arobject")
-        
-        DispatchQueue.global().async {
+//    func saveArModelAndUpload(completionHandler: @escaping (String) -> Void) {
+    func saveArModelAndUpload() {
+        print("Saving testing file")
+        sceneView.session.getCurrentWorldMap { worldMap, error in
+            guard let map = worldMap
+                else { self.showAlert(title: "Can't get current world map", message: error!.localizedDescription); return }
+
             do {
-                try object.export(to: documentURL, previewImage: testRun.previewImage)
-            } catch {
-                fatalError("Failed to save the file to \(documentURL)")
-            }
-            
-            // Initiate a share sheet for the scanned object
-            DispatchQueue.main.async {
-                if let fileURL = URL(string: documentURL.absoluteString), let uploadURL = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model") {
-                    self.uploadFile(url: uploadURL, fileURL: fileURL) { result in
-                        switch result {
-                        case .success(let responseString):
-                            print("Success: \(responseString)")
-                            if let data = responseString.data(using: .utf8) {
-                                do {
-                                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                                       let filename = json["filename"] as? String {
-                                        completionHandler(filename)
-                                    }
-                                } catch {
-                                    print("Error parsing JSON: \(error)")
-                                }
-                            }
-                        case .failure(let error):
-                            print("Error: \(error)")
-                        }
+                let data = try NSKeyedArchiver.archivedData(withRootObject: map, requiringSecureCoding: true)
+                let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
+                var request = URLRequest(url: url)
+                request.httpMethod = "POST"
+                request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+                let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+                    if let error = error {
+                        print("Error uploading data:", error)
+                    } else if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                        print("Received response:", responseString)
                     }
                 }
+                task.resume()
+            } catch {
+                fatalError("Can't save map: \(error.localizedDescription)")
             }
         }
+//        guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
+//            print("Error: Missing scanned object.")
+//            return
+//        }
+//        
+//        let documentURL = FileManager.default.temporaryDirectory.appendingPathComponent(name + ".arobject")
+//        
+//        DispatchQueue.global().async {
+//            do {
+//                try object.export(to: documentURL, previewImage: testRun.previewImage)
+//            } catch {
+//                fatalError("Failed to save the file to \(documentURL)")
+//            }
+//            
+//            // Initiate a share sheet for the scanned object
+//            DispatchQueue.main.async {
+//                if let fileURL = URL(string: documentURL.absoluteString), let uploadURL = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model") {
+//                    self.uploadFile(url: uploadURL, fileURL: fileURL) { result in
+//                        switch result {
+//                        case .success(let responseString):
+//                            print("Success: \(responseString)")
+//                            if let data = responseString.data(using: .utf8) {
+//                                do {
+//                                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+//                                       let filename = json["filename"] as? String {
+//                                        completionHandler(filename)
+//                                    }
+//                                } catch {
+//                                    print("Error parsing JSON: \(error)")
+//                                }
+//                            }
+//                        case .failure(let error):
+//                            print("Error: \(error)")
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
     
     func saveProcedure(procedureTitle: String, arModelFilename: String, completionHandler: @escaping () -> Void) {
@@ -451,17 +478,18 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     }
     
     func createAndShareReferenceObject() {
-        getProcedureTitle() { userInput in
-            if let procedureTitle = userInput, !procedureTitle.isEmpty {
-                print("Procedure Title: \(procedureTitle)")
-                self.saveArModelAndUpload() { arModelFilename in
-                    print("ARModel Filename: \(arModelFilename)")
-                    self.saveProcedure(procedureTitle: procedureTitle, arModelFilename: arModelFilename) {
-                        print("Save Complete.")
-                    }
-                }
-            }
-        }
+        saveArModelAndUpload()
+//        getProcedureTitle() { userInput in
+//            if let procedureTitle = userInput, !procedureTitle.isEmpty {
+//                print("Procedure Title: \(procedureTitle)")
+//                self.saveArModelAndUpload() { arModelFilename in
+//                    print("ARModel Filename: \(arModelFilename)")
+//                    self.saveProcedure(procedureTitle: procedureTitle, arModelFilename: arModelFilename) {
+//                        print("Save Complete.")
+//                    }
+//                }
+//            }
+//        }
     }
     
     func fetchProcedure(procedureTitle: String, completionHandler: @escaping (String, String) -> Void) {
@@ -495,14 +523,118 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     }
     
     func loadProcedure() {
-        getProcedureTitle() { userInput in
-            if let procedureTitle = userInput, !procedureTitle.isEmpty {
-                print("Procedure Title: \(procedureTitle)")
-                self.fetchProcedure(procedureTitle: procedureTitle) { procedureName, arModelFilename in
-                    print("Done Fetching: procedureName:\(procedureName) arModelFilename:\(arModelFilename)")
+        print("loading testing file")
+        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing4")!
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard error == nil else {
+                print("Error downloading ARWorldMap: \(error!)")
+                return
+            }
+
+            guard let data = data else {
+                print("No data returned from the server!")
+                return
+            }
+
+            do {
+                guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data) else {
+                    fatalError("No ARWorldMap in archive.")
                 }
+                
+                // Use the worldMap object here
+                print("Successfully unarchived ARWorldMap!")
+
+            } catch {
+                print("Error unarchiving ARWorldMap: \(error)")
             }
         }
+
+        task.resume()
+
+        
+//        getProcedureTitle() { userInput in
+//            if let procedureTitle = userInput, !procedureTitle.isEmpty {
+//                let procedureTitle = "plant1"
+//                print("Procedure Title: \(procedureTitle)")
+//                self.fetchProcedure(procedureTitle: procedureTitle) { procedureName, arModelFilename in
+//                    let urlStr = "https://storage.cloud.google.com/swift-ar-uploads/\(arModelFilename)"
+//                    print("1. Done Fetching: procedureName:\(procedureName) arModelFilename:\(arModelFilename) url:\(urlStr)")
+////                    self.readFile(URL(string: url)!)
+//                    
+//                    let urlObj = URL(string: urlStr)
+//                    
+//                    do {
+//                        let receivedReferenceObject = try ARReferenceObject(archiveURL: urlObj!)
+//                    } catch {
+//                        print("error")
+//                    }
+                    
+//                    do {
+//                        let receivedReferenceObject = try ARReferenceObject(archiveURL: urlObj!)
+//                        print("Done")
+//                    } catch {
+//                        print("Error handling file:", error)
+//                    }
+                    
+//                    let session = URLSession.shared
+//                    let downloadTask = session.downloadTask(with: urlObj!) { (temporaryURL, response, error) in
+//                        guard let temporaryURL = temporaryURL else {
+//                            print("Error downloading file:", error ?? "Unknown error")
+//                            return
+//                        }
+//                        
+//                        // Define the destination URL in the app's Documents directory
+//                        let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//                        let destinationURL = documentsDirectoryURL.appendingPathComponent(arModelFilename)
+//                        
+//
+                        
+//                        // Define the destination URL to save the file with the original name
+//                        let destinationURL = temporaryURL.deletingLastPathComponent().appendingPathComponent(arModelFilename)
+//                        
+//                        do {
+//                            // Check if the file already exists, if it does, delete it
+//                            if FileManager.default.fileExists(atPath: destinationURL.path) {
+//                                try FileManager.default.removeItem(at: destinationURL)
+//                            }
+//                            
+//                            // Move (or rename) the file from the temporary URL to the desired destination URL
+//                            try FileManager.default.moveItem(at: temporaryURL, to: destinationURL)
+//                            print("2. File renamed and moved to:", destinationURL)
+//                            
+//                            if FileManager.default.fileExists(atPath: destinationURL.path) {
+//                                print("3. It IS THERE")
+//                                let receivedReferenceObject = try ARReferenceObject(archiveURL: destinationURL)
+//                                self.referenceObjectToTest = receivedReferenceObject
+//                                self.state = .testing
+//                                print("3. Done.")
+//                            } else {
+//                                print("3. It's NOT there.")
+//                            }
+//                        } catch {
+//                            print("Error renaming and moving file:", error)
+//                        }
+//                    }
+//                    let downloadTask = URLSession.shared.downloadTask(with: urlObj!) { localURL, response, error in
+////                        print("2. localURL:\(localURL) response:\(response) error:\(error)")
+//                        if let error = error {
+//                            print("2. File download failed: \(error)")
+//                        } else if let localURL = localURL {
+//                            // Save or move localURL to your desired location
+//                            print("2. File downloaded to: \(localURL)")
+//                            do {
+//                                let receivedReferenceObject = try ARReferenceObject(archiveURL: localURL)
+//                                self.referenceObjectToTest = receivedReferenceObject
+//                                self.state = .testing
+//                            } catch {
+//                                print("Error creating ARReferenceObject: \(error)")
+//                            }
+//                        }
+//                    }
+//                    downloadTask.resume()
+//                }
+//            }
+//        }
     }
     
     var limitedTrackingTimer: Timer?
