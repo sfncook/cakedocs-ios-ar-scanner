@@ -14,7 +14,7 @@ class TestRun {
     // The ARReferenceObject to be tested in this run.
     var referenceObject: ARReferenceObject?
     
-    private(set) var detectedObject: DetectedObject?
+    var detectedObject: DetectedObject?
     
     var detections = 0
     var lastDetectionDelayInSeconds: Double = 0
@@ -56,7 +56,7 @@ class TestRun {
         return "Detected after: \(lastDelayMilliseconds) ms. Avg: \(averageDelayMilliseconds) ms"
     }
     
-    func setReferenceObject(_ object: ARReferenceObject, screenshot: UIImage?) {
+    func setReferenceObject(_ object: ARReferenceObject, screenshot: UIImage?, sidesNodeObject: SCNNode?) {
         referenceObject = object
         if let screenshot = screenshot {
             previewImage = screenshot
@@ -65,7 +65,7 @@ class TestRun {
         lastDetectionDelayInSeconds = 0
         averageDetectionDelayInSeconds = 0
         
-        self.detectedObject = DetectedObject(referenceObject: object)
+        self.detectedObject = DetectedObject(referenceObject: object, sidesNodeObject: sidesNodeObject)
         self.sceneView.scene.rootNode.addChildNode(self.detectedObject!)
         
         self.detectedObject?.addChildNode(self.sphereNode)

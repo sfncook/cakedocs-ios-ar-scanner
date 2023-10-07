@@ -15,7 +15,7 @@ class DetectedObject: SCNNode {
     
     private var detectedObjectVisualizationTimer: Timer?
     
-    private let pointCloudVisualization: DetectedPointCloud
+    let pointCloudVisualization: DetectedPointCloud
     
     private var boundingBox: DetectedBoundingBox?
     
@@ -44,10 +44,11 @@ class DetectedObject: SCNNode {
         }
     }
     
-    init(referenceObject: ARReferenceObject) {
+    init(referenceObject: ARReferenceObject, sidesNodeObject: SCNNode?) {
         self.referenceObject = referenceObject
         pointCloudVisualization = DetectedPointCloud(referenceObjectPointCloud: referenceObject.rawFeaturePoints,
-                                                     center: referenceObject.center, extent: referenceObject.extent)
+                                                     center: referenceObject.center, extent: referenceObject.extent,
+                                                     sidesNodeObject: sidesNodeObject)
         
         if let scene = SCNScene(named: "axes.scn", inDirectory: "art.scnassets") {
             originVis = SCNNode()

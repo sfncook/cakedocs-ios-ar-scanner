@@ -13,18 +13,20 @@ class DetectedPointCloud: SCNNode, PointCloud {
     private let referenceObjectPointCloud: ARPointCloud
     private let center: SIMD3<Float>
     private let extent: SIMD3<Float>
-    private var sidesNode = SCNNode()
+    var sidesNode = SCNNode()
     
     private let MANY_CUBES = 15.0
     private let INCHES_15: Float = 0.381
     private let INCHES_5: Float = 0.127
     private var manyAnnotations = 0
     
-    init(referenceObjectPointCloud: ARPointCloud, center: SIMD3<Float>, extent: SIMD3<Float>) {
+    init(referenceObjectPointCloud: ARPointCloud, center: SIMD3<Float>, extent: SIMD3<Float>, sidesNodeObject: SCNNode?) {
         self.referenceObjectPointCloud = referenceObjectPointCloud
         self.center = center
         self.extent = extent
         super.init()
+        
+        self.sidesNode = sidesNodeObject ?? SCNNode()
         
         self.addChildNode(self.sidesNode)
         

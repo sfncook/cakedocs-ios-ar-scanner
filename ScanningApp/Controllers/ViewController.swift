@@ -37,6 +37,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     
     var referenceObjectToMerge: ARReferenceObject?
     var referenceObjectToTest: ARReferenceObject?
+    var sidesNodeObjectToTest: SCNNode?
     
     internal var testRun: TestRun?
     
@@ -321,7 +322,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     }
     
     func testObjectDetection(of object: ARReferenceObject) {
-        self.testRun?.setReferenceObject(object, screenshot: scan?.screenshot)
+        self.testRun?.setReferenceObject(object, screenshot: scan?.screenshot, sidesNodeObject: self.sidesNodeObjectToTest)
         
         // Delete the scan to make sure that users cannot go back from
         // testing to scanning, because:
@@ -386,11 +387,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     func saveArModelAndUpload() {
         print("Saving testing file")
 
+        // Save referenceObject w/out annotations - WORKING
         do {
             guard let testRun = self.testRun, let object = testRun.referenceObject
                 else { print("can't get refObject"); return }
             let data = try NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
-            let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing5")!
+            let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/referenceObject1")!
             var request = URLRequest(url: url)
             request.httpMethod = "POST"
             request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
@@ -403,10 +405,31 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
             }
             task.resume()
         } catch {
-            fatalError("Can't save map: \(error.localizedDescription)")
+            fatalError("Can't save referenceObject: \(error.localizedDescription)")
+        }
+
+        // Save sidesNode (annotations)
+        do {
+            guard let testRun = self.testRun, let object = testRun.detectedObject?.pointCloudVisualization.sidesNode
+                else { print("can't get sidesNode"); return }
+            let data = try NSKeyedArchiver.archivedData(withRootObject: object, requiringSecureCoding: true)
+            let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/sidesNode1")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+            let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+                if let error = error {
+                    print("Error uploading data:", error)
+                } else if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                    print("Received response:", responseString)
+                }
+            }
+            task.resume()
+        } catch {
+            fatalError("Can't save sidesNode: \(error.localizedDescription)")
         }
         
-        // World map
+        // Save World map - WORKING
 //        sceneView.session.getCurrentWorldMap { worldMap, error in
 //            guard let map = worldMap
 //                else { self.showAlert(title: "Can't get current world map", message: error!.localizedDescription); return }
@@ -427,48 +450,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
 //                task.resume()
 //            } catch {
 //                fatalError("Can't save map: \(error.localizedDescription)")
-//            }
-//        }
-        
-        
-        
-        
-//        guard let testRun = self.testRun, let object = testRun.referenceObject, let name = object.name else {
-//            print("Error: Missing scanned object.")
-//            return
-//        }
-//        
-//        let documentURL = FileManager.default.temporaryDirectory.appendingPathComponent(name + ".arobject")
-//        
-//        DispatchQueue.global().async {
-//            do {
-//                try object.export(to: documentURL, previewImage: testRun.previewImage)
-//            } catch {
-//                fatalError("Failed to save the file to \(documentURL)")
-//            }
-//            
-//            // Initiate a share sheet for the scanned object
-//            DispatchQueue.main.async {
-//                if let fileURL = URL(string: documentURL.absoluteString), let uploadURL = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model") {
-//                    self.uploadFile(url: uploadURL, fileURL: fileURL) { result in
-//                        switch result {
-//                        case .success(let responseString):
-//                            print("Success: \(responseString)")
-//                            if let data = responseString.data(using: .utf8) {
-//                                do {
-//                                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-//                                       let filename = json["filename"] as? String {
-//                                        completionHandler(filename)
-//                                    }
-//                                } catch {
-//                                    print("Error parsing JSON: \(error)")
-//                                }
-//                            }
-//                        case .failure(let error):
-//                            print("Error: \(error)")
-//                        }
-//                    }
-//                }
 //            }
 //        }
     }
@@ -551,7 +532,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
     func loadProcedure() {
         print("loading testing file")
         
-        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/testing5")!
+        // Load referenceObject w/out annotations - WORKING
+        let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/referenceObject1")!
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard error == nil else {
                 print("Error downloading test file: \(error!)")
@@ -571,11 +553,40 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                 // Use the worldMap object here
                 print("Successfully unarchived ARReferenceObject!")
                 
-                DispatchQueue.main.async {
-                    self.referenceObjectToTest = referenceObject
-                    self.state = .testing
-                    print("3. Done.")
+                
+                
+                // Load sidesNode - WORKING
+                let url = URL(string: "https://us-central1-cook-250617.cloudfunctions.net/ar-model/sidesNode1")!
+                let taskSidesNode = URLSession.shared.dataTask(with: url) { (data, response, error) in
+                    guard error == nil else {
+                        print("Error downloading sidesNode file: \(error!)")
+                        return
+                    }
+
+                    guard let data = data else {
+                        print("No sidesNode data returned from the server!")
+                        return
+                    }
+
+                    do {
+                        guard let sidesNodeObject = try NSKeyedUnarchiver.unarchivedObject(ofClass: SCNNode.self, from: data) else {
+                            fatalError("No SCNNode sidesNode in archive.")
+                        }
+                        
+                        print("Successfully unarchived sidesNodeObject!")
+                        
+                        DispatchQueue.main.async {
+                            self.referenceObjectToTest = referenceObject
+                            self.sidesNodeObjectToTest = sidesNodeObject
+                            self.state = .testing
+                            print("3. Done.")
+                        }
+
+                    } catch {
+                        print("Error unarchiving ARReferenceObject: \(error)")
+                    }
                 }
+                taskSidesNode.resume()
 
             } catch {
                 print("Error unarchiving ARReferenceObject: \(error)")
@@ -842,7 +853,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                 let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
                 
                 if let mergedObject = mergedObject {
-                    self.testRun?.setReferenceObject(mergedObject, screenshot: nil)
+                    self.testRun?.setReferenceObject(mergedObject, screenshot: nil, sidesNodeObject: nil)
                     self.showAlert(title: "Merge successful", message: "The other scan has been merged into this scan.",
                                    buttonTitle: "OK", showCancel: false)
                     
@@ -857,7 +868,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, UI
                             """
                     let currentScan = UIAlertAction(title: "Use Current Scan", style: .default)
                     let otherScan = UIAlertAction(title: "Use Other Scan", style: .default) { _ in
-                        self.testRun?.setReferenceObject(referenceObject, screenshot: nil)
+                        self.testRun?.setReferenceObject(referenceObject, screenshot: nil, sidesNodeObject: nil)
                     }
                     self.showAlert(title: "Merge failed", message: message, actions: [currentScan, otherScan])
                 }
